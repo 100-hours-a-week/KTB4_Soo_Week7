@@ -64,6 +64,42 @@ loginForm.addEventListener('submit', function(event) {
 
     // 모든 검사를 통과했을 때 처리
     if (isSuccess) {
-        
+        // 1. 서버로 보낼 데이터를 백엔드 Request 구조와 똑같이 매칭해서 객체로 만듦
+        const loginData = {
+            email: emailValue,
+            password: passwordValue
+        };
+
+        // Fetch API를 사용하여 백엔드 서버에 POST 요청을 보냄
+        fetch('http://localhost:8080/api/v1/auth/login', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json' 
+            },
+            body: JSON.stringify(loginData) 
+        })
+        .then(response => response.json()) 
+        .then(resData => {
+            console.log("서버 응답 데이터:", resData); 
+
+            if (resData.code === "LOGIN_SUCCESS") {
+                alert("로그인에 성공했습니다!");
+                // 로그인 성공 시 메인 화면이나 다음 화면(ex: post list)으로 이동시키는 코드
+                // window.location.href = "posts.html"; 
+            } else {
+                
+                if (resData.code === "USER_NOT_FOUND") {
+                    emailError.textContent = `* ${resData.message}`;
+                } else if (resData.code === "LOGIN_FAILED") {
+                    passwordError.textContent = `* ${resData.message}`;
+                } else {
+                    alert(resData.message || "로그인 중 알 수 없는 에러가 발생했습니다.");
+                }
+            }
+        })
+        .catch(error => {
+            console.error("통신 에러 발생:", error);
+            alert("서버와 통신 중 오류가 발생했습니다.");
+        });
     }
 });
