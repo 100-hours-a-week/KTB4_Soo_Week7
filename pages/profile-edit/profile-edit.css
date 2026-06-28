@@ -1,0 +1,373 @@
+body {
+    background-color: #F4F5F7;
+    margin: 0;
+    font-family: Arial, sans-serif;
+    color: #000000;
+}
+
+.main-header {
+    position: relative;
+    width: 100%;
+    height: 104px;
+    border-bottom: 1px solid #000000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #F4F5F7;
+    box-sizing: border-box;
+}
+
+.header-title {
+    width: 206px;
+    height: 32px;
+    font-size: 32px;
+    font-weight: 400;
+    line-height: 100%;
+    text-align: center;
+}
+
+.profile-menu {
+    position: absolute;
+    top: 26px;
+    left: calc(50% + 128px);
+    width: 115px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    z-index: 10;
+}
+
+.header-profile-button {
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    border: none;
+    border-radius: 50%;
+    background-color: transparent;
+    cursor: pointer;
+}
+
+.header-avatar {
+    width: 44px;
+    height: 44px;
+    display: block;
+    border-radius: 50%;
+    background:
+        radial-gradient(circle at 50% 42%, #ffffff 0 30%, transparent 31%),
+        radial-gradient(circle at 38% 38%, #111111 0 5%, transparent 6%),
+        radial-gradient(circle at 62% 38%, #111111 0 5%, transparent 6%),
+        #D9D9D9;
+    border: 1px solid #000000;
+    box-sizing: border-box;
+}
+
+.profile-dropdown {
+    display: none;
+    width: 115px;
+    margin: 8px 0 0;
+    padding: 0;
+    list-style: none;
+    background-color: #E9E9E9;
+}
+
+.profile-menu.is-open .profile-dropdown {
+    display: block;
+}
+
+.profile-dropdown a {
+    width: 115px;
+    height: 43px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #000000;
+    text-decoration: none;
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 100%;
+}
+
+.profile-dropdown a:hover {
+    background-color: #D9D9D9;
+}
+
+.edit-profile-container {
+    width: 392px;
+    margin: 139px auto 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.edit-profile-container h2 {
+    width: auto;
+    height: 38px;
+    margin: 0;
+    font-size: 32px;
+    font-weight: 700;
+    line-height: 100%;
+    text-align: center;
+    white-space: nowrap;
+}
+
+.profile-image-section {
+    position: relative;
+    width: 392px;
+    height: 212px;
+    margin-top: 0;
+}
+
+.profile-image-label {
+    position: absolute;
+    top: 22px;
+    left: 0;
+    font-size: 15px;
+    font-weight: 700;
+    line-height: 100%;
+    white-space: nowrap;
+}
+
+.profile-image-button {
+    position: absolute;
+    top: 63px;
+    left: 50%;
+    width: 149px;
+    height: 149px;
+    padding: 0;
+    border: none;
+    border-radius: 50%;
+    background-color: #464646;
+    transform: translateX(-50%);
+    cursor: pointer;
+    overflow: hidden;
+}
+
+.profile-placeholder {
+    width: 100%;
+    height: 100%;
+    display: block;
+    border-radius: 50%;
+    background:
+        radial-gradient(circle at 50% 39%, #8F8F8F 0 29%, transparent 30%),
+        linear-gradient(120deg, transparent 0 31%, #2A2A2A 32% 45%, transparent 46%),
+        linear-gradient(240deg, transparent 0 31%, #2A2A2A 32% 45%, transparent 46%),
+        #A6A6A6;
+}
+
+.profile-image-button::after {
+    position: absolute;
+    inset: 0;
+    content: "";
+    background-color: rgba(70, 70, 70, 0.55);
+}
+
+.profile-image-button:hover::after {
+    background-color: rgba(233, 233, 233, 0.55);
+}
+
+.profile-change-text {
+    position: absolute;
+    top: 61px;
+    left: 50%;
+    width: 52px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #FFFFFF;
+    border-radius: 14px;
+    color: #FFFFFF;
+    font-size: 13px;
+    font-weight: 700;
+    transform: translateX(-50%);
+    z-index: 1;
+}
+
+#profile-edit-form {
+    width: 392px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.form-panel {
+    width: 392px;
+    min-height: 168px;
+    display: flex;
+    flex-direction: column;
+}
+
+.field-group {
+    width: 392px;
+    display: flex;
+    flex-direction: column;
+}
+
+.field-label,
+.field-group label {
+    margin-bottom: 16px;
+    font-size: 15px;
+    font-weight: 700;
+    line-height: 100%;
+    white-space: nowrap;
+}
+
+.email-text {
+    height: 20px;
+    margin: 0 0 24px;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 20px;
+    word-break: keep-all;
+}
+
+.field-group input {
+    width: 392px;
+    height: 33px;
+    padding: 0 10px;
+    border: 1px solid #000000;
+    border-radius: 4px;
+    background-color: #F4F5F7;
+    font-size: 14px;
+    box-sizing: border-box;
+}
+
+.error-text {
+    height: 15px;
+    margin: 4px 0 0;
+    color: #FF0000;
+    font-size: 12px;
+    line-height: 15px;
+}
+
+#edit-submit-btn {
+    width: 392px;
+    height: 41px;
+    margin-top: 0;
+    border: none;
+    border-radius: 4px;
+    background-color: #ACA0EB;
+    color: #FFFFFF;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.withdraw-button {
+    width: 327px;
+    height: 41px;
+    border: none;
+    border-radius: 4px;
+    background-color: transparent;
+    color: #000000;
+    font-size: 14px;
+    font-weight: 400;
+    cursor: pointer;
+}
+
+.toast-message {
+    width: 124px;
+    height: 70px;
+    margin-top: 48px;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    background-color: #ACA0EB;
+    color: #FFFFFF;
+    font-size: 18px;
+    font-weight: 700;
+    box-sizing: border-box;
+}
+
+.toast-message.is-visible {
+    display: flex;
+}
+
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(0, 0, 0, 0.35);
+}
+
+.modal-overlay.is-visible {
+    display: flex;
+}
+
+.withdraw-modal {
+    width: 408px;
+    height: 242px;
+    padding: 40px 48px;
+    border-radius: 12px;
+    background-color: #FFFFFF;
+    box-sizing: border-box;
+}
+
+.withdraw-modal h2 {
+    margin: 0;
+    font-size: 24px;
+    font-weight: 700;
+    line-height: 100%;
+    text-align: center;
+}
+
+.withdraw-modal p {
+    margin: 34px 0 0;
+    font-size: 20px;
+    font-weight: 400;
+    line-height: 100%;
+    text-align: center;
+}
+
+.modal-actions {
+    margin-top: 28px;
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+}
+
+.modal-actions button {
+    width: 128px;
+    height: 44px;
+    border: none;
+    border-radius: 12px;
+    font-size: 20px;
+    font-weight: 400;
+    cursor: pointer;
+}
+
+.modal-cancel-button {
+    background-color: #242424;
+    color: #FFFFFF;
+}
+
+.modal-confirm-button {
+    background-color: #ACA0EB;
+    color: #000000;
+}
+
+@media (max-width: 620px) {
+    .profile-menu {
+        left: auto;
+        right: 16px;
+    }
+
+    .edit-profile-container,
+    .profile-image-section,
+    #profile-edit-form,
+    .form-panel,
+    .field-group,
+    .field-group input,
+    #edit-submit-btn {
+        width: min(392px, calc(100vw - 40px));
+    }
+
+    .withdraw-modal {
+        width: calc(100vw - 48px);
+        padding-left: 24px;
+        padding-right: 24px;
+    }
+}
