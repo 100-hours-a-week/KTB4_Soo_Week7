@@ -13,6 +13,7 @@ const emailError = document.getElementById('email-error');
 const passwordError = document.getElementById('password-error');
 const passwordConfirmError = document.getElementById('password-confirm-error');
 const nicknameError = document.getElementById('nickname-error');
+const API_BASE_URL = `http://${window.location.hostname}:8080`;
 
 // 실시간 입력 감지하여 버튼 색상 바꾸기
 function checkInputs() {
@@ -124,8 +125,9 @@ signupForm.addEventListener('submit', function(event) {
             nickname: nicknameValue
         };
 
-        fetch('http://localhost:8080/api/v1/auth/signup', {
+        fetch(`${API_BASE_URL}/api/v1/auth/signup`, {
             method: 'POST',
+            credentials: 'include',
             headers: {
                 'Content-Type': 'application/json'
             },
@@ -136,6 +138,8 @@ signupForm.addEventListener('submit', function(event) {
             console.log("서버 응답 데이터:", resData);
 
             if (resData.code === "SIGNUP_SUCCESS") {
+                localStorage.setItem('loginUserEmail', emailValue);
+                localStorage.setItem('loginUserNickname', nicknameValue);
                 alert("회원가입에 성공했습니다!");
                 window.location.href = "../login/index.html";
             } else if (resData.code === "DUPLICATE_EMAIL") {

@@ -6,6 +6,7 @@ const loginBtn = document.getElementById('login-submit-btn');
 
 const emailError = document.getElementById('email-error');
 const passwordError = document.getElementById('password-error');
+const API_BASE_URL = `http://${window.location.hostname}:8080`;
 
 // 실시간 입력 감지하여 버튼 색상 바꾸기
 function checkInputs() {
@@ -71,8 +72,9 @@ loginForm.addEventListener('submit', function(event) {
         };
 
         // Fetch API를 사용하여 백엔드 서버에 POST 요청을 보냄
-        fetch('http://localhost:8080/api/v1/auth/login', {
+        fetch(`${API_BASE_URL}/api/v1/auth/login`, {
             method: 'POST',
+            credentials: 'include',
             headers: {
                 'Content-Type': 'application/json' 
             },
@@ -83,6 +85,7 @@ loginForm.addEventListener('submit', function(event) {
             console.log("서버 응답 데이터:", resData); 
 
             if (resData.code === "LOGIN_SUCCESS") {
+                localStorage.setItem('loginUserEmail', emailValue);
                 alert("로그인에 성공했습니다!");
                 // 로그인 성공 시 메인 화면이나 다음 화면(ex: post list)으로 이동시키는 코드
                 // window.location.href = "posts.html"; 
