@@ -20,10 +20,8 @@ function checkInputs() {
     const passwordValue = passwordInput.value.trim();
     const passwordConfirmValue = passwordConfirmInput.value.trim();
     const nicknameValue = nicknameInput.value.trim();
-    const hasProfileImage = profileInput.files.length > 0;
 
     if (
-        hasProfileImage &&
         emailValue !== "" &&
         passwordValue !== "" &&
         passwordConfirmValue !== "" &&
@@ -80,12 +78,6 @@ signupForm.addEventListener('submit', function(event) {
 
     let isSuccess = true;
 
-    // 프로필 사진 유효성 검사
-    if (profileInput.files.length === 0) {
-        profileError.textContent = "* 프로필 사진을 추가해주세요.";
-        isSuccess = false;
-    }
-
     // 이메일 유효성 검사
     if (emailValue === "") {
         emailError.textContent = "* 이메일을 입력해주세요.";
@@ -126,6 +118,54 @@ signupForm.addEventListener('submit', function(event) {
     }
 
     if (isSuccess) {
-        alert("회원가입 조건을 모두 통과했습니다.");
+        const signupData = {
+            email: emailValue,
+            password: passwordValue,
+            nickname: nicknameValue
+        };
+
+        fetch('http://localhost:8080/api/v1/auth/signup', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(signupData)
+        })
+        .then(response => response.json())
+        .then(resData => {
+            console.log("서버 응답 데이터:", resData);
+
+            if (resData.code === "SIGNUP_SUCCESS") {
+                alert("회원가입에 성공했습니다!");
+                window.location.href = "../login/index.html";
+            } else if (resData.code === "DUPLICATE_EMAIL") {
+                emailError.textContent = `* ${resData.message}`;
+            } else if (resData.code === "DUPLICATE_NICKNAME") {
+                nicknameError.textContent = `* ${resData.message}`;
+            } else if (
+                resData.code === "EMAIL_EMPTY" ||
+                resData.code === "INVALID_EMAIL_FORMAT"
+            ) {
+                emailError.textContent = `* ${resData.message || "올바른 이메일 주소 형식을 입력해주세요."}`;
+            } else if (
+                resData.code === "PASSWORD_EMPTY" ||
+                resData.code === "INVALID_PASSWORD_LENGTH" ||
+                resData.code === "INVALID_PASSWORD_COMPLEXITY"
+            ) {
+                passwordError.textContent = `* ${resData.message || "비밀번호 형식을 확인해주세요."}`;
+            } else if (
+                resData.code === "NICKNAME_EMPTY" ||
+                resData.code === "INVALID_NICKNAME_LENGTH" ||
+                resData.code === "NICKNAME_CONTAINS_SPACE"
+            ) {
+                nicknameError.textContent = `* ${resData.message || "닉네임 형식을 확인해주세요."}`;
+            } else {
+                alert(resData.message || "회원가입 중 알 수 없는 에러가 발생했습니다.");
+            }
+        })
+        .catch(error => {
+            console.error("통신 에러 발생:", error);
+            alert("서버와 통신 중 오류가 발생했습니다.");
+        });
     }
 });
