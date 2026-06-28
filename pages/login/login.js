@@ -87,8 +87,7 @@ loginForm.addEventListener('submit', function(event) {
             if (resData.code === "LOGIN_SUCCESS") {
                 localStorage.setItem('loginUserEmail', emailValue);
                 alert("로그인에 성공했습니다!");
-                // 로그인 성공 시 메인 화면이나 다음 화면(ex: post list)으로 이동시키는 코드
-                // window.location.href = "posts.html"; 
+                window.location.href = "../posts/index.html";
             } else {
                 
                 if (resData.code === "USER_NOT_FOUND") {
