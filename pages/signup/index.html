@@ -18,36 +18,37 @@
 
         <section class="profile-section" aria-labelledby="profile-label">
             <div id="profile-label" class="profile-label">프로필 사진</div>
-            <p class="error-text">* helper text</p>
+            <p id="profile-error" class="error-text">* helper text</p>
 
             <button type="button" class="profile-upload-button" aria-label="프로필 사진 추가">
                 <span aria-hidden="true">+</span>
             </button>
+            <input type="file" id="profile-input" accept="image/*">
         </section>
 
         <form id="signup-form">
             <div class="input-group">
                 <label for="email-input">이메일*</label>
                 <input type="email" id="email-input" placeholder="이메일을 입력하세요">
-                <p class="error-text">* helper text</p>
+                <p id="email-error" class="error-text">* helper text</p>
             </div>
 
             <div class="input-group">
                 <label for="password-input">비밀번호*</label>
                 <input type="password" id="password-input" placeholder="비밀번호를 입력하세요">
-                <p class="error-text">* helper text</p>
+                <p id="password-error" class="error-text">* helper text</p>
             </div>
 
             <div class="input-group">
                 <label for="password-confirm-input">비밀번호 확인*</label>
                 <input type="password" id="password-confirm-input" placeholder="비밀번호를 한번 더 입력하세요">
-                <p class="error-text">* helper text</p>
+                <p id="password-confirm-error" class="error-text">* helper text</p>
             </div>
 
             <div class="input-group">
                 <label for="nickname-input">닉네임*</label>
                 <input type="text" id="nickname-input" placeholder="닉네임을 입력하세요">
-                <p class="error-text">* helper text</p>
+                <p id="nickname-error" class="error-text">* helper text</p>
             </div>
 
             <button type="submit" id="signup-submit-btn">회원가입</button>
@@ -55,5 +56,7 @@
 
         <a class="login-link" href="../login/index.html">로그인하러 가기</a>
     </main>
+
+    <script src="./signup.js"></script>
 </body>
 </html>
