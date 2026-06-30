@@ -185,8 +185,7 @@ postEditForm.addEventListener('submit', function(event) {
 
         if (resData.code === "POST_UPDATE_SUCCESS") {
             alert("게시글이 수정되었습니다.");
-            // 게시글 상세 페이지가 생기면 아래처럼 이동시키면 됩니다.
-            // window.location.href = `../post-detail/index.html?id=${resData.data}`;
+            window.location.href = `../post-detail/index.html?id=${resData.data}`;
         }
     })
     .catch(error => {
