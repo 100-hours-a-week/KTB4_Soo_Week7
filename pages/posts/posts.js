@@ -90,9 +90,9 @@ function buildPostCard(post) {
         <h3 class="post-card-title">${escapeHtml(titleText)}</h3>
         <div class="post-card-meta-row">
             <div class="post-card-stats">
-                <span>좋아요 ${likeCount}</span>
-                <span>댓글 ${commentCount}</span>
-                <span>조회수 ${viewCount}</span>
+                <span>목격 ${likeCount}</span>
+                <span>단서 ${commentCount}</span>
+                <span>관찰 ${viewCount}</span>
             </div>
             <time class="post-card-date">${escapeHtml(postedAt)}</time>
         </div>
@@ -126,7 +126,7 @@ function renderPosts(posts) {
     if (!posts || posts.length === 0) {
         const empty = document.createElement('article');
         empty.className = 'posts-empty';
-        empty.textContent = '등록된 게시글이 없습니다.';
+        empty.textContent = '아직 등록된 버그가 없습니다. 첫 번째 버그를 발견해보세요!';
         postsList.appendChild(empty);
         return;
     }

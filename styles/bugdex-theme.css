@@ -1,0 +1,1171 @@
+@import url('https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=IBM+Plex+Mono:wght@400;500;600;700&family=Noto+Sans+KR:wght@400;500;600;700&display=swap');
+
+:root {
+    --ink: #111a17;
+    --ink-soft: #1b2722;
+    --panel: #f3f0df;
+    --paper: #fffdf3;
+    --lime: #b7f34a;
+    --lime-dark: #77a91e;
+    --coral: #ff6b55;
+    --yellow: #ffd84d;
+    --mint: #6ce5bc;
+    --blue: #6aa9ff;
+    --muted: #6e766f;
+    --line: #26352e;
+    --danger: #e84838;
+    --shadow: 6px 6px 0 var(--line);
+    --radius: 12px;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+html {
+    min-height: 100%;
+    background: var(--ink);
+}
+
+body {
+    min-height: 100vh;
+    margin: 0;
+    color: var(--ink);
+    font-family: 'Noto Sans KR', sans-serif;
+    background-color: #dce2cc !important;
+    background-image:
+        linear-gradient(rgba(17, 26, 23, .055) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(17, 26, 23, .055) 1px, transparent 1px) !important;
+    background-size: 24px 24px !important;
+}
+
+body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background:
+        radial-gradient(circle at 8% 18%, rgba(183, 243, 74, .35), transparent 19rem),
+        radial-gradient(circle at 92% 80%, rgba(255, 107, 85, .18), transparent 22rem);
+}
+
+button,
+input,
+textarea {
+    font: inherit;
+}
+
+button,
+a {
+    -webkit-tap-highlight-color: transparent;
+}
+
+.main-header {
+    position: sticky !important;
+    top: 0;
+    z-index: 30;
+    width: 100% !important;
+    height: 72px !important;
+    min-height: 72px;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 0 max(24px, calc((100vw - 1040px) / 2)) !important;
+    color: var(--paper);
+    background: var(--ink) !important;
+    border-bottom: 4px solid var(--lime) !important;
+}
+
+.header-title {
+    width: auto !important;
+    color: var(--paper) !important;
+    font-family: 'Black Han Sans', sans-serif !important;
+    font-size: clamp(21px, 3vw, 29px) !important;
+    font-weight: 400 !important;
+    line-height: 1 !important;
+    letter-spacing: -.02em !important;
+}
+
+.header-title::before {
+    content: 'BUG #404  ';
+    color: var(--lime);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: .48em;
+    letter-spacing: .08em;
+    vertical-align: .28em;
+}
+
+.back-link {
+    position: absolute !important;
+    left: max(24px, calc((100vw - 1040px) / 2)) !important;
+    top: 50% !important;
+    width: 38px !important;
+    height: 38px !important;
+    display: grid !important;
+    place-items: center;
+    padding: 0 0 4px !important;
+    color: var(--ink) !important;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 32px !important;
+    text-decoration: none;
+    background: var(--lime);
+    border: 2px solid var(--paper);
+    border-radius: 8px;
+    transform: translateY(-50%);
+}
+
+.profile-menu {
+    position: absolute !important;
+    top: 50% !important;
+    right: max(24px, calc((100vw - 1040px) / 2)) !important;
+    transform: translateY(-50%);
+}
+
+.header-profile-button,
+.profile-image-button,
+.profile-upload-button {
+    border: 3px solid var(--line) !important;
+    background: var(--lime) !important;
+    box-shadow: 3px 3px 0 rgba(0, 0, 0, .45) !important;
+}
+
+.header-profile-button {
+    width: 42px !important;
+    height: 42px !important;
+    overflow: hidden;
+    border-color: var(--paper) !important;
+    border-radius: 50% !important;
+}
+
+.header-avatar,
+.author-avatar,
+.profile-placeholder {
+    background-color: var(--lime) !important;
+    background-image:
+        radial-gradient(circle at 35% 42%, var(--ink) 0 7%, transparent 8%),
+        radial-gradient(circle at 65% 42%, var(--ink) 0 7%, transparent 8%),
+        linear-gradient(var(--ink), var(--ink)) !important;
+    background-repeat: no-repeat !important;
+    background-size: auto, auto, 35% 7% !important;
+    background-position: center, center, center 68% !important;
+}
+
+.profile-dropdown {
+    top: 52px !important;
+    right: 0 !important;
+    width: 168px !important;
+    padding: 8px !important;
+    overflow: hidden;
+    background: var(--paper) !important;
+    border: 3px solid var(--line) !important;
+    border-radius: 10px !important;
+    box-shadow: var(--shadow) !important;
+}
+
+.profile-dropdown a {
+    display: block;
+    padding: 10px 12px !important;
+    color: var(--ink) !important;
+    font-size: 13px !important;
+    font-weight: 700;
+    text-decoration: none;
+    border-radius: 6px;
+}
+
+.profile-dropdown a:hover {
+    color: var(--ink) !important;
+    background: var(--lime) !important;
+}
+
+main {
+    position: relative;
+}
+
+.login-container,
+.signup-container,
+.password-edit-container,
+.edit-profile-container,
+.post-create-container,
+.post-edit-container,
+.posts-container,
+.post-detail-container {
+    width: min(calc(100% - 32px), 960px) !important;
+    margin: 0 auto !important;
+    padding-top: clamp(40px, 8vw, 74px) !important;
+    padding-bottom: 72px !important;
+}
+
+.login-container,
+.signup-container,
+.password-edit-container,
+.edit-profile-container,
+.post-create-container,
+.post-edit-container {
+    max-width: 560px !important;
+}
+
+main > h2,
+.login-container > h2,
+.signup-container > h2,
+.password-edit-container > h2,
+.edit-profile-container > h2,
+.post-create-container > h2,
+.post-edit-container > h2 {
+    margin: 0 0 24px !important;
+    color: var(--ink) !important;
+    font-family: 'Black Han Sans', sans-serif !important;
+    font-size: clamp(32px, 7vw, 48px) !important;
+    font-weight: 400 !important;
+    line-height: 1.1 !important;
+    text-align: left !important;
+    letter-spacing: -.03em !important;
+}
+
+main > h2::after {
+    content: ' / FIELD NOTE';
+    color: var(--lime-dark);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    letter-spacing: .08em;
+}
+
+form,
+.profile-image-section,
+.profile-section {
+    position: relative;
+}
+
+.login-container form,
+.signup-container form,
+.password-edit-container form,
+.edit-profile-container form,
+.post-create-container form,
+.post-edit-container form {
+    padding: clamp(22px, 5vw, 34px) !important;
+    background: var(--paper) !important;
+    border: 3px solid var(--line) !important;
+    border-radius: var(--radius) !important;
+    box-shadow: var(--shadow) !important;
+}
+
+.login-container form::before,
+.signup-container form::before,
+.password-edit-container form::before,
+.edit-profile-container form::before,
+.post-create-container form::before,
+.post-edit-container form::before {
+    content: '● RECORDING';
+    position: absolute;
+    top: 12px;
+    right: 16px;
+    color: var(--coral);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: .08em;
+}
+
+.input-group,
+.form-group,
+.field-group,
+.image-group {
+    margin: 0 0 22px !important;
+}
+
+label,
+.field-label,
+.profile-label,
+.profile-image-label {
+    display: block;
+    margin: 0 0 8px !important;
+    color: var(--ink) !important;
+    font-family: 'IBM Plex Mono', 'Noto Sans KR', monospace !important;
+    font-size: 13px !important;
+    font-weight: 700 !important;
+    letter-spacing: -.02em;
+}
+
+input:not([type='file']),
+textarea {
+    width: 100% !important;
+    color: var(--ink) !important;
+    background: #f4f1df !important;
+    border: 2px solid var(--line) !important;
+    border-radius: 8px !important;
+    outline: none !important;
+    box-shadow: inset 3px 3px 0 rgba(17, 26, 23, .08) !important;
+    transition: border-color .18s, box-shadow .18s, transform .18s;
+}
+
+input:not([type='file']) {
+    height: 50px !important;
+    padding: 0 14px !important;
+}
+
+textarea {
+    min-height: 170px !important;
+    padding: 14px !important;
+    resize: vertical;
+}
+
+input:focus,
+textarea:focus {
+    border-color: var(--lime-dark) !important;
+    box-shadow: 0 0 0 4px rgba(183, 243, 74, .38) !important;
+}
+
+input::placeholder,
+textarea::placeholder {
+    color: #8a918b !important;
+}
+
+.error-text {
+    min-height: 18px;
+    margin: 6px 0 0 !important;
+    color: var(--danger) !important;
+    font-family: 'IBM Plex Mono', 'Noto Sans KR', monospace;
+    font-size: 11px !important;
+}
+
+button[type='submit'],
+#post-submit-btn,
+#edit-submit-btn,
+#login-submit-btn,
+#signup-submit-btn,
+#password-edit-submit-btn,
+.create-post-btn {
+    min-height: 50px;
+    color: var(--ink) !important;
+    font-weight: 800 !important;
+    background: var(--lime) !important;
+    border: 3px solid var(--line) !important;
+    border-radius: 8px !important;
+    box-shadow: 4px 4px 0 var(--line) !important;
+    cursor: pointer;
+    transition: transform .14s, box-shadow .14s, filter .14s;
+}
+
+button[type='submit']:hover,
+.create-post-btn:hover {
+    filter: brightness(1.04);
+    transform: translate(-1px, -1px);
+    box-shadow: 6px 6px 0 var(--line) !important;
+}
+
+button[type='submit']:active,
+.create-post-btn:active {
+    transform: translate(3px, 3px);
+    box-shadow: 1px 1px 0 var(--line) !important;
+}
+
+.signup-link-wrap,
+.login-link,
+.withdraw-button {
+    margin-top: 24px !important;
+    color: var(--ink) !important;
+    font-size: 13px !important;
+    font-weight: 700;
+    text-align: center;
+}
+
+.signup-link-wrap a,
+.login-link {
+    color: var(--ink) !important;
+    text-decoration-color: var(--lime-dark) !important;
+    text-decoration-thickness: 3px !important;
+    text-underline-offset: 4px;
+}
+
+/* Login identity card */
+.login-container::before {
+    content: 'BUG HUNTER ACCESS TERMINAL';
+    display: inline-block;
+    margin-bottom: 12px;
+    padding: 5px 9px;
+    color: var(--paper);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .08em;
+    background: var(--ink);
+    border-radius: 4px;
+}
+
+/* Upload areas */
+.profile-section,
+.profile-image-section {
+    margin-bottom: 22px !important;
+    padding: 20px !important;
+    background: rgba(255, 253, 243, .6) !important;
+    border: 2px dashed var(--line) !important;
+    border-radius: 12px !important;
+}
+
+.profile-upload-button,
+.profile-image-button {
+    width: 112px !important;
+    height: 112px !important;
+    border-radius: 24px 38px 28px 42px !important;
+}
+
+input[type='file']::file-selector-button {
+    margin-right: 10px;
+    padding: 9px 12px;
+    color: var(--paper);
+    font-weight: 700;
+    background: var(--ink);
+    border: 0;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+/* Posts index */
+.posts-hero {
+    align-items: flex-end !important;
+    margin-bottom: 30px !important;
+    padding: clamp(24px, 5vw, 42px) !important;
+    color: var(--paper);
+    background: var(--ink) !important;
+    border: 3px solid var(--line) !important;
+    border-radius: 18px !important;
+    box-shadow: 8px 8px 0 var(--lime-dark) !important;
+}
+
+.posts-hero::before {
+    content: 'FIELD GUIDE / VOL.01';
+    position: absolute;
+    top: 18px;
+    right: 22px;
+    color: var(--lime);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .1em;
+}
+
+.posts-hero-text {
+    text-align: left !important;
+}
+
+.posts-welcome {
+    margin: 0 0 8px !important;
+    color: var(--lime) !important;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px !important;
+    font-weight: 700;
+    letter-spacing: .06em;
+}
+
+.posts-desc {
+    max-width: 620px;
+    margin: 0 !important;
+    color: var(--paper) !important;
+    font-family: 'Noto Sans KR', sans-serif !important;
+    font-size: clamp(30px, 6vw, 52px) !important;
+    font-weight: 600 !important;
+    line-height: 1.12 !important;
+    text-align: left !important;
+    word-break: keep-all;
+}
+
+.create-post-btn {
+    flex: 0 0 auto;
+    width: auto !important;
+    padding: 0 22px !important;
+}
+
+.posts-list {
+    gap: 22px !important;
+}
+
+.post-card {
+    position: relative;
+    min-height: 178px;
+    padding: 30px 30px 22px 112px !important;
+    overflow: hidden;
+    background: var(--paper) !important;
+    border: 3px solid var(--line) !important;
+    border-radius: 14px !important;
+    box-shadow: var(--shadow) !important;
+    cursor: pointer;
+    transition: transform .16s, box-shadow .16s;
+}
+
+.post-card::before {
+    content: '🐛';
+    position: absolute;
+    left: 22px;
+    top: 28px;
+    width: 66px;
+    height: 66px;
+    display: grid;
+    place-items: center;
+    font-size: 34px;
+    background: var(--lime);
+    border: 3px solid var(--line);
+    border-radius: 38% 62% 55% 45%;
+}
+
+.post-card::after {
+    content: 'WILD BUG';
+    position: absolute;
+    top: 0;
+    right: 0;
+    padding: 7px 12px;
+    color: var(--paper);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: .08em;
+    background: var(--coral);
+    border-left: 3px solid var(--line);
+    border-bottom: 3px solid var(--line);
+}
+
+.post-card:hover {
+    transform: translate(-3px, -3px) rotate(-.25deg);
+    box-shadow: 10px 10px 0 var(--line) !important;
+}
+
+.post-card-title {
+    margin: 0 0 20px !important;
+    color: var(--ink) !important;
+    font-size: clamp(20px, 4vw, 27px) !important;
+    font-weight: 800 !important;
+    line-height: 1.35 !important;
+}
+
+.post-card-stats {
+    gap: 8px !important;
+}
+
+.post-card-stats span {
+    padding: 4px 8px;
+    color: var(--ink) !important;
+    font-family: 'IBM Plex Mono', 'Noto Sans KR', monospace;
+    font-size: 11px !important;
+    font-weight: 700;
+    background: #e7e4d4;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+}
+
+.post-card-date,
+.author-name {
+    color: var(--muted) !important;
+    font-family: 'IBM Plex Mono', 'Noto Sans KR', monospace;
+    font-size: 11px !important;
+}
+
+.post-card-footer {
+    border-top: 2px dashed #c9c7b9 !important;
+}
+
+.author-avatar {
+    border: 2px solid var(--line) !important;
+}
+
+.posts-empty {
+    padding: 70px 20px !important;
+    color: var(--muted) !important;
+    font-family: 'IBM Plex Mono', 'Noto Sans KR', monospace;
+    text-align: center;
+    background: rgba(255, 253, 243, .68) !important;
+    border: 3px dashed var(--line) !important;
+    border-radius: 14px !important;
+}
+
+/* Post detail */
+.post-detail,
+.comment-panel,
+.comment-item {
+    background: var(--paper) !important;
+    border: 3px solid var(--line) !important;
+    border-radius: 14px !important;
+    box-shadow: var(--shadow) !important;
+}
+
+.post-detail {
+    position: relative;
+    overflow: hidden;
+}
+
+.post-detail::before {
+    content: 'SPECIMEN REPORT';
+    display: block;
+    padding: 9px 18px;
+    color: var(--ink);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .12em;
+    background: var(--lime);
+    border-bottom: 3px solid var(--line);
+}
+
+.post-head {
+    padding: clamp(22px, 5vw, 38px) !important;
+    border-bottom: 2px dashed #bbb9aa !important;
+}
+
+.post-head h1 {
+    margin: 0 0 24px !important;
+    color: var(--ink) !important;
+    font-family: 'Black Han Sans', sans-serif !important;
+    font-size: clamp(28px, 6vw, 44px) !important;
+    font-weight: 400 !important;
+    line-height: 1.2 !important;
+}
+
+.post-author time,
+.comment-meta time {
+    color: var(--muted) !important;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px !important;
+}
+
+.post-actions button,
+.comment-actions button,
+.cancel-btn,
+.confirm-btn,
+.modal-actions button {
+    color: var(--ink) !important;
+    font-weight: 700 !important;
+    background: transparent !important;
+    border: 2px solid var(--line) !important;
+    border-radius: 6px !important;
+}
+
+.post-actions button:hover,
+.comment-actions button:hover {
+    background: var(--yellow) !important;
+}
+
+.post-image {
+    width: calc(100% - clamp(44px, 10vw, 76px)) !important;
+    min-height: 280px !important;
+    margin: clamp(22px, 5vw, 38px) auto 0 !important;
+    background-color: #d5d7ca !important;
+    background-image: radial-gradient(circle, rgba(17, 26, 23, .14) 1px, transparent 1px);
+    background-size: 12px 12px !important;
+    border: 3px solid var(--line) !important;
+    border-radius: 10px !important;
+}
+
+.post-image:empty::after {
+    content: 'NO ERROR SCREENSHOT';
+    display: grid;
+    min-height: 280px;
+    place-items: center;
+    color: #70786f;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.post-content {
+    min-height: 160px;
+    padding: clamp(24px, 5vw, 40px) !important;
+    color: #28332d !important;
+    font-size: 15px !important;
+    line-height: 1.9 !important;
+}
+
+.post-stats {
+    gap: 10px !important;
+    padding: 22px clamp(22px, 5vw, 40px) 34px !important;
+    border-top: 2px dashed #bbb9aa !important;
+}
+
+.stat-box {
+    min-width: 108px !important;
+    padding: 13px 18px !important;
+    color: var(--ink) !important;
+    background: #e7e4d4 !important;
+    border: 2px solid var(--line) !important;
+    border-radius: 8px !important;
+}
+
+button.stat-box {
+    background: var(--lime) !important;
+    box-shadow: 3px 3px 0 var(--line);
+}
+
+.stat-box strong {
+    font-family: 'IBM Plex Mono', monospace;
+}
+
+.comment-panel {
+    margin-top: 28px !important;
+    padding: 0 !important;
+    overflow: hidden;
+}
+
+.comment-panel::before {
+    content: 'DEBUG CLUES';
+    display: block;
+    padding: 10px 16px;
+    color: var(--paper);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .1em;
+    background: var(--ink);
+}
+
+.comment-panel form {
+    padding: 18px !important;
+}
+
+.comment-item {
+    margin-top: 16px !important;
+    padding: 20px !important;
+    box-shadow: 4px 4px 0 var(--line) !important;
+}
+
+.comment-content {
+    line-height: 1.7 !important;
+}
+
+/* Modals */
+.modal-overlay {
+    background: rgba(17, 26, 23, .78) !important;
+    backdrop-filter: blur(3px);
+}
+
+.confirm-modal,
+.withdraw-modal {
+    padding: 30px !important;
+    background: var(--paper) !important;
+    border: 3px solid var(--line) !important;
+    border-radius: 12px !important;
+    box-shadow: 8px 8px 0 var(--coral) !important;
+}
+
+.confirm-modal h2,
+.withdraw-modal h2 {
+    font-family: 'Black Han Sans', sans-serif !important;
+    font-weight: 400 !important;
+}
+
+.confirm-btn,
+.modal-confirm-button {
+    background: var(--coral) !important;
+}
+
+.cancel-btn,
+.modal-cancel-button {
+    background: #ddd9c8 !important;
+}
+
+.complete-message,
+.toast-message {
+    color: var(--ink) !important;
+    background: var(--lime) !important;
+    border: 2px solid var(--line) !important;
+    border-radius: 7px !important;
+    box-shadow: 3px 3px 0 var(--line) !important;
+}
+
+@media (max-width: 700px) {
+    .main-header {
+        height: 64px !important;
+        min-height: 64px;
+        padding-inline: 16px !important;
+    }
+
+    .back-link {
+        left: 14px !important;
+        width: 34px !important;
+        height: 34px !important;
+    }
+
+    .profile-menu {
+        right: 14px !important;
+    }
+
+    .header-profile-button {
+        width: 36px !important;
+        height: 36px !important;
+    }
+
+    .header-title::before {
+        display: none;
+    }
+
+    .posts-hero {
+        align-items: stretch !important;
+        padding-top: 54px !important;
+    }
+
+    .create-post-btn {
+        width: 100% !important;
+        margin-top: 24px;
+    }
+
+    .post-card {
+        padding: 94px 18px 18px !important;
+    }
+
+    .post-card::before {
+        top: 18px;
+        left: 18px;
+        width: 56px;
+        height: 56px;
+        font-size: 28px;
+    }
+
+    .post-card-meta-row {
+        align-items: flex-start !important;
+        flex-direction: column !important;
+        gap: 10px;
+    }
+
+    .post-card-stats {
+        flex-wrap: wrap;
+    }
+
+    .post-meta-row {
+        align-items: flex-start !important;
+        flex-direction: column !important;
+        gap: 14px;
+    }
+
+    .post-stats {
+        display: grid !important;
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    .stat-box {
+        min-width: 0 !important;
+        padding-inline: 8px !important;
+    }
+}
+
+/* Normalize legacy fixed-size page rules */
+body {
+    line-height: 1.55;
+}
+
+.header-title {
+    height: auto !important;
+    line-height: 1.1 !important;
+    text-align: center;
+    white-space: nowrap;
+}
+
+.profile-menu {
+    left: auto !important;
+    width: auto !important;
+    align-items: flex-end !important;
+}
+
+.header-avatar {
+    width: 100% !important;
+    height: 100% !important;
+    display: block;
+    border-radius: 50%;
+}
+
+.profile-dropdown {
+    position: absolute !important;
+    top: 50px !important;
+    margin: 0 !important;
+}
+
+.profile-dropdown a {
+    width: 100% !important;
+    height: auto !important;
+    line-height: 1.4 !important;
+}
+
+.login-container,
+.signup-container,
+.password-edit-container,
+.edit-profile-container,
+.post-create-container,
+.post-edit-container {
+    align-items: stretch !important;
+}
+
+.login-container > h2,
+.signup-container > h2,
+.password-edit-container > h2,
+.edit-profile-container > h2,
+.post-create-container > h2,
+.post-edit-container > h2 {
+    width: 100% !important;
+    height: auto !important;
+    min-height: 0 !important;
+    line-height: 1.18 !important;
+    white-space: normal !important;
+}
+
+main > h2::after {
+    display: block;
+    margin-top: 7px;
+    line-height: 1.4;
+}
+
+.login-container form,
+.signup-container form,
+.password-edit-container form,
+.edit-profile-container form,
+.post-create-container form,
+.post-edit-container form,
+.password-form-panel,
+.form-panel,
+.input-group,
+.form-group,
+.field-group,
+.image-group,
+.file-row {
+    width: 100% !important;
+    min-width: 0 !important;
+    height: auto !important;
+    min-height: 0 !important;
+}
+
+.login-container form,
+.signup-container form,
+.password-edit-container form,
+.edit-profile-container form,
+.post-create-container form,
+.post-edit-container form {
+    align-items: stretch !important;
+}
+
+.title-group,
+.content-group,
+.image-group {
+    padding-top: 0 !important;
+    border-top: 0 !important;
+}
+
+.input-group label,
+.form-group label,
+.image-group label {
+    line-height: 1.45 !important;
+}
+
+#title-input,
+#content-input,
+#email-input,
+#password-input,
+#password-confirm-input,
+#nickname-input {
+    width: 100% !important;
+}
+
+#content-input {
+    height: auto !important;
+    min-height: 220px !important;
+    line-height: 1.7 !important;
+}
+
+#login-submit-btn,
+#signup-submit-btn,
+#password-edit-submit-btn,
+#post-submit-btn,
+#edit-submit-btn {
+    width: 100% !important;
+    height: auto !important;
+    margin-inline: 0 !important;
+    line-height: 1.3 !important;
+}
+
+.signup-link-wrap,
+.signup-link-wrap a,
+.login-link {
+    width: auto !important;
+    height: auto !important;
+    line-height: 1.6 !important;
+}
+
+.profile-section,
+.profile-image-section {
+    width: 100% !important;
+    height: auto !important;
+    min-height: 0 !important;
+    display: flex !important;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+
+.profile-label,
+.profile-image-label,
+.profile-section .error-text {
+    position: static !important;
+    width: 100%;
+    height: auto !important;
+    min-height: 0;
+    margin: 0 !important;
+}
+
+.profile-upload-button,
+.profile-image-button {
+    position: relative !important;
+    inset: auto !important;
+    flex: 0 0 auto;
+    margin: 4px auto 0;
+    transform: none !important;
+}
+
+.profile-change-text {
+    top: 50% !important;
+    transform: translate(-50%, -50%);
+}
+
+.posts-hero {
+    position: relative;
+    width: 100% !important;
+    height: auto !important;
+    line-height: 1.5;
+}
+
+.posts-hero-text {
+    align-items: flex-start !important;
+}
+
+.posts-welcome,
+.posts-desc,
+.post-card-title,
+.post-card-date,
+.author-name {
+    height: auto !important;
+}
+
+.posts-welcome {
+    line-height: 1.5 !important;
+}
+
+.posts-desc {
+    line-height: 1.18 !important;
+}
+
+.create-post-btn {
+    height: 50px !important;
+    line-height: 1.3 !important;
+}
+
+.post-card-meta-row,
+.post-card-footer {
+    height: auto !important;
+}
+
+.post-card-meta-row {
+    line-height: 1.5 !important;
+}
+
+.post-card-footer {
+    min-height: 54px;
+    padding-block: 12px !important;
+}
+
+.post-detail-container {
+    max-width: 820px !important;
+}
+
+.post-image,
+.post-content,
+.post-stats {
+    box-sizing: border-box;
+}
+
+.post-content {
+    width: 100% !important;
+    height: auto !important;
+    margin: 0 !important;
+    line-height: 1.85 !important;
+}
+
+.post-stats {
+    width: 100% !important;
+    height: auto !important;
+    margin: 0 !important;
+}
+
+.stat-box {
+    height: auto !important;
+    line-height: 1.35 !important;
+}
+
+.comment-panel textarea {
+    height: auto !important;
+    min-height: 130px !important;
+    line-height: 1.7 !important;
+}
+
+.comment-form-footer {
+    height: auto !important;
+    min-height: 0 !important;
+    padding-top: 12px !important;
+}
+
+#comment-submit-btn {
+    width: auto !important;
+    min-width: 138px;
+    height: 44px !important;
+    padding-inline: 18px;
+}
+
+.comment-meta,
+.comment-content {
+    height: auto !important;
+    line-height: 1.65 !important;
+}
+
+.confirm-modal,
+.withdraw-modal {
+    width: min(408px, calc(100vw - 32px)) !important;
+    height: auto !important;
+    min-height: 0 !important;
+}
+
+@media (max-width: 700px) {
+    .login-container,
+    .signup-container,
+    .password-edit-container,
+    .edit-profile-container,
+    .post-create-container,
+    .post-edit-container,
+    .posts-container,
+    .post-detail-container {
+        width: calc(100% - 28px) !important;
+        padding-top: 34px !important;
+    }
+
+    .login-container form,
+    .signup-container form,
+    .password-edit-container form,
+    .edit-profile-container form,
+    .post-create-container form,
+    .post-edit-container form {
+        padding: 24px 18px !important;
+        box-shadow: 4px 4px 0 var(--line) !important;
+    }
+
+    .post-card-footer {
+        margin-top: 16px !important;
+    }
+
+    .post-image {
+        width: calc(100% - 32px) !important;
+        min-height: 190px !important;
+    }
+
+    .post-image:empty::after {
+        min-height: 190px;
+    }
+
+    .post-stats {
+        gap: 6px !important;
+        padding-inline: 16px !important;
+    }
+
+    .stat-box span {
+        font-size: 10px;
+    }
+}

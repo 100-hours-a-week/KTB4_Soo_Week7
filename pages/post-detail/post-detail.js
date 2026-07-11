@@ -222,7 +222,7 @@ function buildCommentItem(comment) {
         editBtn.addEventListener('click', function() {
             editingCommentId = commentId;
             commentInput.value = getCommentContent(comment);
-            commentSubmitBtn.textContent = '댓글 수정';
+            commentSubmitBtn.textContent = '단서 수정';
             setCommentButtonState();
             commentInput.focus();
         });
@@ -328,7 +328,7 @@ function submitComment() {
 
         commentInput.value = "";
         editingCommentId = null;
-        commentSubmitBtn.textContent = "댓글 등록";
+        commentSubmitBtn.textContent = "단서 등록";
         setCommentButtonState();
         loadPostDetail();
     })
