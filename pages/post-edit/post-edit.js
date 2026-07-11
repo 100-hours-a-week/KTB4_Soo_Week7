@@ -92,9 +92,8 @@ function loadPostDetail() {
         return;
     }
 
-    fetch(`${API_BASE_URL}/api/v1/posts/${postId}`, {
-        method: 'GET',
-        credentials: 'include'
+    authFetch(`${API_BASE_URL}/api/v1/posts/${postId}`, {
+        method: 'GET'
     })
     .then(response => {
         return parseResponseBody(response)
@@ -159,9 +158,8 @@ postEditForm.addEventListener('submit', function(event) {
         content: contentValue
     };
 
-    fetch(`${API_BASE_URL}/api/v1/posts/${postId}`, {
+    authFetch(`${API_BASE_URL}/api/v1/posts/${postId}`, {
         method: 'PATCH',
-        credentials: 'include',
         headers: {
             'Content-Type': 'application/json'
         },

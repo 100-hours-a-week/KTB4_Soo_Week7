@@ -74,7 +74,6 @@ loginForm.addEventListener('submit', function(event) {
         // Fetch API를 사용하여 백엔드 서버에 POST 요청을 보냄
         fetch(`${API_BASE_URL}/api/v1/auth/login`, {
             method: 'POST',
-            credentials: 'include',
             headers: {
                 'Content-Type': 'application/json' 
             },
@@ -85,6 +84,7 @@ loginForm.addEventListener('submit', function(event) {
             console.log("서버 응답 데이터:", resData); 
 
             if (resData.code === "LOGIN_SUCCESS") {
+                saveTokens(resData.data);
                 localStorage.setItem('loginUserEmail', emailValue);
                 alert("로그인에 성공했습니다!");
                 window.location.href = "../posts/index.html";

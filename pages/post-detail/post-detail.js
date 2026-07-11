@@ -264,9 +264,8 @@ function loadPostDetail() {
         return;
     }
 
-    fetch(`${API_BASE_URL}/api/v1/posts/${postId}`, {
-        method: 'GET',
-        credentials: 'include'
+    authFetch(`${API_BASE_URL}/api/v1/posts/${postId}`, {
+        method: 'GET'
     })
     .then(response => {
         return parseResponseBody(response)
@@ -302,9 +301,8 @@ function submitComment() {
         ? `${API_BASE_URL}/api/v1/posts/${postId}/comments/${editingCommentId}`
         : `${API_BASE_URL}/api/v1/posts/${postId}/comments`;
 
-    fetch(url, {
+    authFetch(url, {
         method: isEditing ? 'PATCH' : 'POST',
-        credentials: 'include',
         headers: {
             'Content-Type': 'application/json'
         },
@@ -339,9 +337,8 @@ function submitComment() {
 }
 
 function deletePost() {
-    fetch(`${API_BASE_URL}/api/v1/posts/${postId}`, {
-        method: 'DELETE',
-        credentials: 'include'
+    authFetch(`${API_BASE_URL}/api/v1/posts/${postId}`, {
+        method: 'DELETE'
     })
     .then(response => {
         if (response.ok) {
@@ -365,9 +362,8 @@ function deleteComment() {
         return;
     }
 
-    fetch(`${API_BASE_URL}/api/v1/posts/${postId}/comments/${deletingCommentId}`, {
-        method: 'DELETE',
-        credentials: 'include'
+    authFetch(`${API_BASE_URL}/api/v1/posts/${postId}/comments/${deletingCommentId}`, {
+        method: 'DELETE'
     })
     .then(response => {
         if (response.ok) {
@@ -422,10 +418,34 @@ deleteCommentModal.addEventListener('click', function(event) {
 });
 
 likeBtn.addEventListener('click', function() {
+    const previousLiked = isLiked;
+    const previousLikeCount = currentLikeCount;
+
     isLiked = !isLiked;
     currentLikeCount += isLiked ? 1 : -1;
     likeBtn.classList.toggle('is-liked', isLiked);
     likeCount.textContent = formatCount(currentLikeCount);
+
+    authFetch(`${API_BASE_URL}/api/v1/posts/${postId}/like`, {
+        method: 'POST'
+    })
+    .then(response => {
+        if (!response.ok) {
+            return parseResponseBody(response).then(resData => {
+                showServerError(resData?.code, resData?.message);
+                throw new Error('좋아요 요청에 실패했습니다.');
+            });
+        }
+
+        return null;
+    })
+    .catch(error => {
+        console.error('좋아요 처리 실패:', error);
+        isLiked = previousLiked;
+        currentLikeCount = previousLikeCount;
+        likeBtn.classList.toggle('is-liked', isLiked);
+        likeCount.textContent = formatCount(currentLikeCount);
+    });
 });
 
 commentInput.addEventListener('input', setCommentButtonState);

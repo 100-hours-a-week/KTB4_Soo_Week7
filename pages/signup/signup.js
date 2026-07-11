@@ -127,7 +127,6 @@ signupForm.addEventListener('submit', function(event) {
 
         fetch(`${API_BASE_URL}/api/v1/auth/signup`, {
             method: 'POST',
-            credentials: 'include',
             headers: {
                 'Content-Type': 'application/json'
             },

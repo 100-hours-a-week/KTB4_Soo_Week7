@@ -37,9 +37,8 @@ function setUserInfo(user) {
 }
 
 function loadUserInfo() {
-    fetch(`${API_BASE_URL}/api/v1/users/me`, {
-        method: 'GET',
-        credentials: 'include'
+    authFetch(`${API_BASE_URL}/api/v1/users/me`, {
+        method: 'GET'
     })
     .then(response => {
         if (!response.ok) {
@@ -131,9 +130,8 @@ profileEditForm.addEventListener('submit', function(event) {
         newNickname: nicknameInput.value.trim()
     };
 
-    fetch(`${API_BASE_URL}/api/v1/users/me`, {
+    authFetch(`${API_BASE_URL}/api/v1/users/me`, {
         method: 'PATCH',
-        credentials: 'include',
         headers: {
             'Content-Type': 'application/json'
         },
@@ -173,6 +171,7 @@ modalCancelBtn.addEventListener('click', function() {
 });
 
 modalConfirmBtn.addEventListener('click', function() {
+    clearAuth();
     window.location.href = "../login/index.html";
 });
 

@@ -106,9 +106,8 @@ passwordEditForm.addEventListener('submit', function(event) {
         newPassword: passwordInput.value.trim()
     };
 
-    fetch(`${API_BASE_URL}/api/v1/users/me/password`, {
+    authFetch(`${API_BASE_URL}/api/v1/users/me/password`, {
         method: 'PATCH',
-        credentials: 'include',
         headers: {
             'Content-Type': 'application/json'
         },

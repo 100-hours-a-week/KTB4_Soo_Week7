@@ -96,9 +96,8 @@ postCreateForm.addEventListener('submit', function(event) {
         content: contentValue
     };
 
-    fetch(`${API_BASE_URL}/api/v1/posts`, {
+    authFetch(`${API_BASE_URL}/api/v1/posts`, {
         method: 'POST',
-        credentials: 'include',
         headers: {
             'Content-Type': 'application/json'
         },

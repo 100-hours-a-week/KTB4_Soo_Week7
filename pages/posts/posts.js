@@ -137,9 +137,8 @@ function renderPosts(posts) {
 }
 
 function loadPostList() {
-    fetch(`${API_BASE_URL}/api/v1/posts`, {
-        method: 'GET',
-        credentials: 'include'
+    authFetch(`${API_BASE_URL}/api/v1/posts`, {
+        method: 'GET'
     })
     .then(response => {
         return parseResponseBody(response).then(resData => {
