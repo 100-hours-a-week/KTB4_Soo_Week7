@@ -703,7 +703,7 @@ button.stat-box {
 }
 
 .comment-panel::before {
-    content: 'DEBUG CLUES';
+    content: 'DEBUG COMMENTS';
     display: block;
     padding: 10px 16px;
     color: var(--paper);

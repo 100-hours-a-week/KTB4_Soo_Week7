@@ -90,9 +90,9 @@ function buildPostCard(post) {
         <h3 class="post-card-title">${escapeHtml(titleText)}</h3>
         <div class="post-card-meta-row">
             <div class="post-card-stats">
-                <span>목격 ${likeCount}</span>
-                <span>단서 ${commentCount}</span>
-                <span>관찰 ${viewCount}</span>
+                <span>같은 문제 ${likeCount}</span>
+                <span>댓글 ${commentCount}</span>
+                <span>조회 ${viewCount}</span>
             </div>
             <time class="post-card-date">${escapeHtml(postedAt)}</time>
         </div>
