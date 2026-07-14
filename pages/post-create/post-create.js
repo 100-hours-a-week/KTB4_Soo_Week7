@@ -119,10 +119,13 @@ postCreateForm.addEventListener('submit', function(event) {
             return;
         }
 
-        if (resData.code === "POST_CREATE_SUCCESS") {
-            alert("게시글이 작성되었습니다.");
-            window.location.href = `../post-detail/index.html?id=${resData.data}`;
+        if (resData.data == null) {
+            alert("생성된 게시글 ID가 응답에 포함되지 않았습니다.");
+            return;
         }
+
+        alert("게시글이 작성되었습니다.");
+        window.location.href = `../post-detail/index.html?id=${resData.data}`;
     })
     .catch(error => {
         console.error("통신 에러 발생:", error);

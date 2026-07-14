@@ -446,9 +446,12 @@ function loadPostDetail() {
             });
     })
     .then(resData => {
-        if (resData?.code === "POST_DETAIL_FETCH_SUCCESS") {
-            setPostDetail(resData.data);
+        if (!resData?.data) {
+            alert("게시글 상세 데이터가 응답에 포함되지 않았습니다.");
+            return;
         }
+
+        setPostDetail(resData.data);
     })
     .catch(error => {
         console.error("통신 에러 발생:", error);

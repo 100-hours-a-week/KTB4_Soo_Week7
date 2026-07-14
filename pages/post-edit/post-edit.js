@@ -111,9 +111,12 @@ function loadPostDetail() {
             return;
         }
 
-        if (resData.code === "POST_DETAIL_FETCH_SUCCESS") {
-            setPostDetail(resData.data);
+        if (!resData.data) {
+            alert("게시글 상세 데이터가 응답에 포함되지 않았습니다.");
+            return;
         }
+
+        setPostDetail(resData.data);
     })
     .catch(error => {
         console.error("통신 에러 발생:", error);
@@ -181,10 +184,13 @@ postEditForm.addEventListener('submit', function(event) {
             return;
         }
 
-        if (resData.code === "POST_UPDATE_SUCCESS") {
-            alert("게시글이 수정되었습니다.");
-            window.location.href = `../post-detail/index.html?id=${resData.data}`;
+        if (resData.data == null) {
+            alert("수정된 게시글 ID가 응답에 포함되지 않았습니다.");
+            return;
         }
+
+        alert("게시글이 수정되었습니다.");
+        window.location.href = `../post-detail/index.html?id=${resData.data}`;
     })
     .catch(error => {
         console.error("통신 에러 발생:", error);
