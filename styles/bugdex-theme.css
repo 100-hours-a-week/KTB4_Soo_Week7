@@ -653,7 +653,7 @@ input[type='file']::file-selector-button {
     border-radius: 10px !important;
 }
 
-.post-image:empty::after {
+.post-image:not(.has-image)::after {
     content: 'NO ERROR SCREENSHOT';
     display: grid;
     min-height: 280px;
@@ -1251,7 +1251,7 @@ main > h2::after {
         min-height: 190px !important;
     }
 
-    .post-image:empty::after {
+    .post-image:not(.has-image)::after {
         min-height: 190px;
     }
 
