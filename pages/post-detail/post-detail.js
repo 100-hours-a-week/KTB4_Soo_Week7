@@ -148,8 +148,13 @@ function showServerError(errorCode, errorMessage) {
         return;
     }
 
-    if (errorCode === "CONTENT_EMPTY") {
+    if (errorCode === "CONTENT_EMPTY" || errorCode === "COMMENT_CONTENT_EMPTY") {
         alert(errorMessage || "댓글 내용을 입력해주세요.");
+        return;
+    }
+
+    if (errorCode === "PARENT_COMMENT_NOT_FOUND" || errorCode === "INVALID_COMMENT_POST_MISMATCH") {
+        alert(errorMessage || "답글을 작성할 댓글을 확인할 수 없습니다.");
         return;
     }
 
@@ -200,6 +205,7 @@ function setPostDetail(post) {
 }
 
 function buildReplyComposer(parentCommentId, parentAuthor) {
+    let isSubmitting = false;
     const form = document.createElement('form');
     form.className = 'reply-composer';
     form.dataset.parentId = parentCommentId;
@@ -241,6 +247,10 @@ function buildReplyComposer(parentCommentId, parentAuthor) {
     });
 
     cancelBtn.addEventListener('click', function() {
+        if (isSubmitting) {
+            return;
+        }
+
         textarea.value = '';
         submitBtn.disabled = true;
         characterCount.textContent = '0 / 500';
@@ -250,14 +260,52 @@ function buildReplyComposer(parentCommentId, parentAuthor) {
     form.addEventListener('submit', function(event) {
         event.preventDefault();
 
-        if (textarea.value.trim() === '') {
+        const content = textarea.value.trim();
+
+        if (content === '' || isSubmitting) {
             return;
         }
 
-        // API 연동 시 parentCommentId와 textarea 값을 전송한다.
-        console.info('대댓글 UI 제출:', {
-            parentId: parentCommentId,
-            content: textarea.value.trim()
+        isSubmitting = true;
+        textarea.disabled = true;
+        cancelBtn.disabled = true;
+        submitBtn.disabled = true;
+        submitBtn.textContent = '등록 중...';
+
+        authFetch(`${API_BASE_URL}/api/v1/posts/${postId}/comments`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                parentId: parentCommentId,
+                content
+            })
+        })
+        .then(response => {
+            return parseResponseBody(response).then(resData => ({ response, resData }));
+        })
+        .then(({ response, resData }) => {
+            if (!response.ok) {
+                showServerError(resData?.code, resData?.message);
+                return;
+            }
+
+            textarea.value = '';
+            characterCount.textContent = '0 / 500';
+            form.hidden = true;
+            loadPostDetail();
+        })
+        .catch(error => {
+            console.error('대댓글 등록 실패:', error);
+            alert('답글 등록 중 서버와 통신할 수 없습니다.');
+        })
+        .finally(() => {
+            isSubmitting = false;
+            textarea.disabled = false;
+            cancelBtn.disabled = false;
+            submitBtn.textContent = '답글 등록';
+            submitBtn.disabled = textarea.value.trim() === '';
         });
     });
 
