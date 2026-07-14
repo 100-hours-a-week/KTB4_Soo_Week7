@@ -112,6 +112,16 @@ function getCommentDate(comment) {
     return comment.updatedAt || comment.createdAt || comment.updatedDate || comment.createdDate;
 }
 
+function getCommentChildren(comment) {
+    return Array.isArray(comment.children) ? comment.children : [];
+}
+
+function countComments(comments) {
+    return comments.reduce((count, comment) => {
+        return count + 1 + getCommentChildren(comment).length;
+    }, 0);
+}
+
 function handleAuthError(errorCode, errorMessage) {
     if (errorCode === "USER_NOT_FOUND" || errorCode === "UNAUTHORIZED_USER") {
         alert(errorMessage || "로그인이 필요합니다.");
@@ -174,7 +184,9 @@ function setPostDetail(post) {
     postContent.textContent = post.content || "";
     likeCount.textContent = formatCount(currentLikeCount);
     viewCount.textContent = formatCount(post.viewCount ?? post.views ?? 0);
-    commentCount.textContent = formatCount(Array.isArray(post.comments) ? post.comments.length : post.commentCount ?? 0);
+    commentCount.textContent = formatCount(
+        Array.isArray(post.comments) ? countComments(post.comments) : post.commentCount ?? 0
+    );
 
     if (post.image) {
         postImage.classList.remove('is-hidden');
@@ -187,10 +199,78 @@ function setPostDetail(post) {
     renderComments(post.comments || []);
 }
 
-function buildCommentItem(comment) {
+function buildReplyComposer(parentCommentId, parentAuthor) {
+    const form = document.createElement('form');
+    form.className = 'reply-composer';
+    form.dataset.parentId = parentCommentId;
+    form.hidden = true;
+
+    const label = document.createElement('label');
+    label.className = 'reply-composer-label';
+    label.textContent = `↳ ${parentAuthor}님에게 답글`;
+
+    const textarea = document.createElement('textarea');
+    textarea.className = 'reply-input';
+    textarea.rows = 3;
+    textarea.maxLength = 500;
+    textarea.placeholder = '답글을 입력해주세요.';
+    textarea.setAttribute('aria-label', `${parentAuthor}님에게 답글 작성`);
+
+    const characterCount = document.createElement('p');
+    characterCount.className = 'reply-character-count';
+    characterCount.textContent = '0 / 500';
+    characterCount.setAttribute('aria-live', 'polite');
+
+    const footer = document.createElement('div');
+    footer.className = 'reply-composer-footer';
+
+    const cancelBtn = document.createElement('button');
+    cancelBtn.type = 'button';
+    cancelBtn.className = 'reply-cancel-btn';
+    cancelBtn.textContent = '취소';
+
+    const submitBtn = document.createElement('button');
+    submitBtn.type = 'submit';
+    submitBtn.className = 'reply-submit-btn';
+    submitBtn.textContent = '답글 등록';
+    submitBtn.disabled = true;
+
+    textarea.addEventListener('input', function() {
+        submitBtn.disabled = textarea.value.trim() === '';
+        characterCount.textContent = `${textarea.value.length} / 500`;
+    });
+
+    cancelBtn.addEventListener('click', function() {
+        textarea.value = '';
+        submitBtn.disabled = true;
+        characterCount.textContent = '0 / 500';
+        form.hidden = true;
+    });
+
+    form.addEventListener('submit', function(event) {
+        event.preventDefault();
+
+        if (textarea.value.trim() === '') {
+            return;
+        }
+
+        // API 연동 시 parentCommentId와 textarea 값을 전송한다.
+        console.info('대댓글 UI 제출:', {
+            parentId: parentCommentId,
+            content: textarea.value.trim()
+        });
+    });
+
+    footer.append(cancelBtn, submitBtn);
+    form.append(label, textarea, characterCount, footer);
+
+    return form;
+}
+
+function buildCommentItem(comment, isReply = false) {
     const commentId = getCommentId(comment);
     const item = document.createElement('article');
-    item.className = 'comment-item';
+    item.className = isReply ? 'comment-item is-reply' : 'comment-item';
 
     const avatar = document.createElement('span');
     avatar.className = 'author-avatar';
@@ -216,6 +296,27 @@ function buildCommentItem(comment) {
     actions.className = 'comment-actions';
 
     if (commentId != null) {
+        if (!isReply) {
+            const replyBtn = document.createElement('button');
+            replyBtn.type = 'button';
+            replyBtn.className = 'reply-toggle-btn';
+            replyBtn.textContent = '답글';
+            actions.appendChild(replyBtn);
+
+            const replyComposer = buildReplyComposer(commentId, getCommentAuthor(comment));
+            replyBtn.addEventListener('click', function() {
+                replyComposer.hidden = !replyComposer.hidden;
+
+                if (!replyComposer.hidden) {
+                    replyComposer.querySelector('.reply-input').focus();
+                }
+            });
+
+            body.append(meta, content, replyComposer);
+        } else {
+            body.append(meta, content);
+        }
+
         const editBtn = document.createElement('button');
         editBtn.type = 'button';
         editBtn.textContent = '수정';
@@ -236,10 +337,11 @@ function buildCommentItem(comment) {
         });
 
         actions.append(editBtn, deleteBtn);
+    } else {
+        body.append(meta, content);
     }
 
     meta.append(author, time);
-    body.append(meta, content);
     item.append(avatar, body, actions);
 
     return item;
@@ -253,7 +355,24 @@ function renderComments(comments) {
     }
 
     comments.forEach(comment => {
-        commentsList.appendChild(buildCommentItem(comment));
+        const thread = document.createElement('div');
+        thread.className = 'comment-thread';
+        thread.appendChild(buildCommentItem(comment));
+
+        const children = getCommentChildren(comment);
+        if (children.length > 0) {
+            const replies = document.createElement('div');
+            replies.className = 'reply-list';
+            replies.setAttribute('aria-label', `${getCommentAuthor(comment)}님의 답글 목록`);
+
+            children.forEach(child => {
+                replies.appendChild(buildCommentItem(child, true));
+            });
+
+            thread.appendChild(replies);
+        }
+
+        commentsList.appendChild(thread);
     });
 }
 

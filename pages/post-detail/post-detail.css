@@ -307,6 +307,12 @@ button.stat-box.is-liked {
     gap: 18px;
 }
 
+.comment-thread {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
 .comment-item {
     display: grid;
     grid-template-columns: 36px 1fr auto;
@@ -347,6 +353,104 @@ button.stat-box.is-liked {
     display: flex;
     gap: 8px;
     padding-top: 6px;
+}
+
+.reply-list {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-left: 50px;
+    padding-left: 24px;
+    border-left: 2px solid #D9D9D9;
+}
+
+.reply-list::before {
+    content: "↳";
+    position: absolute;
+    top: 20px;
+    left: -14px;
+    width: 26px;
+    color: #7F6AEE;
+    background-color: #F4F5F7;
+    text-align: center;
+    font-size: 18px;
+    font-weight: 700;
+}
+
+.comment-item.is-reply {
+    grid-template-columns: 32px 1fr auto;
+}
+
+.comment-item.is-reply .author-avatar {
+    width: 32px;
+    height: 32px;
+}
+
+.reply-composer {
+    margin-top: 14px;
+    padding: 14px;
+    border: 1px solid #D9D9D9;
+    border-radius: 8px;
+    background-color: #F8F8F8;
+}
+
+.reply-composer[hidden] {
+    display: none;
+}
+
+.reply-composer-label {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.reply-input {
+    width: 100%;
+    min-height: 76px;
+    padding: 12px;
+    resize: vertical;
+    border: 1px solid #BDBDBD;
+    border-radius: 6px;
+    background-color: #FFFFFF;
+    font-family: inherit;
+    font-size: 14px;
+    line-height: 1.6;
+    box-sizing: border-box;
+}
+
+.reply-character-count {
+    min-height: 18px;
+    margin: 6px 0 0;
+    color: #6B7280;
+    font-size: 11px;
+    text-align: right;
+}
+
+.reply-composer-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    margin-top: 8px;
+}
+
+.reply-composer-footer button {
+    min-width: 76px;
+    height: 34px;
+    border: 1px solid #ACA0EB;
+    border-radius: 7px;
+    cursor: pointer;
+}
+
+.reply-submit-btn {
+    color: #FFFFFF;
+    background-color: #7F6AEE;
+}
+
+.reply-submit-btn:disabled {
+    cursor: not-allowed;
+    opacity: 0.45;
 }
 
 .modal-overlay {
@@ -439,6 +543,19 @@ button.stat-box.is-liked {
     }
 
     .comment-actions {
+        grid-column: 2;
+    }
+
+    .reply-list {
+        margin-left: 18px;
+        padding-left: 14px;
+    }
+
+    .comment-item.is-reply {
+        grid-template-columns: 32px 1fr;
+    }
+
+    .comment-item.is-reply .comment-actions {
         grid-column: 2;
     }
 

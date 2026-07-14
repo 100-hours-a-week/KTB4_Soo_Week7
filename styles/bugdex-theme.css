@@ -728,6 +728,101 @@ button.stat-box {
     line-height: 1.7 !important;
 }
 
+.comment-thread {
+    gap: 14px;
+}
+
+.reply-list {
+    border-left: 3px dashed var(--lime-dark) !important;
+}
+
+.reply-list::before {
+    color: var(--ink) !important;
+    background: var(--lime) !important;
+    border: 2px solid var(--line);
+    border-radius: 5px;
+}
+
+.comment-item.is-reply {
+    position: relative;
+    background: #eeecdc !important;
+    box-shadow: 3px 3px 0 var(--line) !important;
+}
+
+.comment-item.is-reply::before {
+    content: 'REPLY';
+    position: absolute;
+    top: -9px;
+    left: 14px;
+    padding: 2px 7px;
+    color: var(--paper);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: .08em;
+    background: var(--ink);
+    border-radius: 3px;
+}
+
+.reply-toggle-btn {
+    background: var(--lime) !important;
+}
+
+.reply-composer {
+    margin-top: 16px;
+    padding: 14px !important;
+    background: #e7e4d4 !important;
+    border: 2px dashed var(--line) !important;
+    border-radius: 9px !important;
+}
+
+.reply-composer-label {
+    color: var(--ink) !important;
+    font-family: 'IBM Plex Mono', 'Noto Sans KR', monospace !important;
+    font-size: 11px !important;
+}
+
+.reply-input {
+    min-height: 82px !important;
+    padding: 11px !important;
+    font-size: 13px !important;
+    line-height: 1.65 !important;
+    background: var(--paper) !important;
+}
+
+.reply-character-count {
+    color: var(--muted);
+    font-family: 'IBM Plex Mono', 'Noto Sans KR', monospace;
+}
+
+.reply-composer-footer button {
+    min-width: 78px !important;
+    min-height: 36px !important;
+    height: 36px !important;
+    padding: 0 12px !important;
+    font-size: 12px !important;
+    line-height: 1.2 !important;
+    border: 2px solid var(--line) !important;
+    border-radius: 6px !important;
+    box-shadow: none !important;
+    transform: none !important;
+}
+
+.reply-cancel-btn {
+    color: var(--ink) !important;
+    background: var(--paper) !important;
+}
+
+.reply-submit-btn {
+    color: var(--ink) !important;
+    background: var(--lime) !important;
+}
+
+.reply-submit-btn:disabled {
+    background: #c4c6b9 !important;
+    filter: none !important;
+}
+
 /* Modals */
 .modal-overlay {
     background: rgba(17, 26, 23, .78) !important;
@@ -1167,5 +1262,18 @@ main > h2::after {
 
     .stat-box span {
         font-size: 10px;
+    }
+
+    .comment-item {
+        padding: 16px !important;
+    }
+
+    .reply-list {
+        margin-left: 12px;
+        padding-left: 12px;
+    }
+
+    .reply-composer-footer {
+        flex-wrap: wrap;
     }
 }
