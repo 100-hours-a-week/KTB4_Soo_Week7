@@ -1,5 +1,6 @@
-const profileMenu = document.querySelector('.profile-menu');
-const headerProfileBtn = document.querySelector('.header-profile-button');
+import { authFetch } from '../../js/auth.js';
+import { API_BASE_URL, initProfileMenu, parseResponseBody } from '../../js/utils.js';
+
 const postEditForm = document.getElementById('post-edit-form');
 const titleInput = document.getElementById('title-input');
 const contentInput = document.getElementById('content-input');
@@ -7,20 +8,8 @@ const imageInput = document.getElementById('image-input');
 const currentImageName = document.getElementById('current-image-name');
 const postError = document.getElementById('post-error');
 const postSubmitBtn = document.getElementById('post-submit-btn');
-const API_BASE_URL = `http://${window.location.hostname}:8080`;
-
 const params = new URLSearchParams(window.location.search);
 const postId = params.get('id');
-
-function toggleProfileMenu() {
-    profileMenu.classList.toggle('is-open');
-}
-
-function closeProfileMenu(event) {
-    if (!profileMenu.contains(event.target)) {
-        profileMenu.classList.remove('is-open');
-    }
-}
 
 function checkInputs() {
     const titleValue = titleInput.value.trim();
@@ -31,17 +20,6 @@ function checkInputs() {
     } else {
         postSubmitBtn.style.backgroundColor = "#ACA0EB";
     }
-}
-
-function parseResponseBody(response) {
-    return response.text()
-        .then(text => {
-            if (!text) {
-                return null;
-            }
-
-            return JSON.parse(text);
-        });
 }
 
 function showPostServerError(errorCode, errorMessage) {
@@ -124,8 +102,7 @@ function loadPostDetail() {
     });
 }
 
-headerProfileBtn.addEventListener('click', toggleProfileMenu);
-document.addEventListener('click', closeProfileMenu);
+initProfileMenu();
 titleInput.addEventListener('input', checkInputs);
 contentInput.addEventListener('input', checkInputs);
 imageInput.addEventListener('change', function() {

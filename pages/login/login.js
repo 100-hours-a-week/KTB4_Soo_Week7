@@ -1,3 +1,6 @@
+import { saveTokens } from '../../js/auth.js';
+import { API_BASE_URL } from '../../js/utils.js';
+
 // 사용할 HTML 요소(DOM)들 가져오기
 const loginForm = document.getElementById('login-form');
 const emailInput = document.getElementById('email-input');
@@ -6,7 +9,6 @@ const loginBtn = document.getElementById('login-submit-btn');
 
 const emailError = document.getElementById('email-error');
 const passwordError = document.getElementById('password-error');
-const API_BASE_URL = `http://${window.location.hostname}:8080`;
 
 // 실시간 입력 감지하여 버튼 색상 바꾸기
 function checkInputs() {

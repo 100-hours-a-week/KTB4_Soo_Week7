@@ -1,11 +1,11 @@
 const ACCESS_TOKEN_KEY = 'accessToken';
 const REFRESH_TOKEN_KEY = 'refreshToken';
 
-function getAccessToken() {
+export function getAccessToken() {
     return localStorage.getItem(ACCESS_TOKEN_KEY);
 }
 
-function saveTokens(tokenResponse) {
+export function saveTokens(tokenResponse) {
     if (!tokenResponse?.accessToken) {
         throw new Error('로그인 응답에 accessToken이 없습니다.');
     }
@@ -17,7 +17,7 @@ function saveTokens(tokenResponse) {
     }
 }
 
-function clearAuth() {
+export function clearAuth() {
     localStorage.removeItem(ACCESS_TOKEN_KEY);
     localStorage.removeItem(REFRESH_TOKEN_KEY);
     localStorage.removeItem('loginUserEmail');
@@ -35,7 +35,7 @@ function createAuthHeaders(headers = {}) {
     return authHeaders;
 }
 
-function authFetch(url, options = {}) {
+export function authFetch(url, options = {}) {
     return fetch(url, {
         ...options,
         headers: createAuthHeaders(options.headers)

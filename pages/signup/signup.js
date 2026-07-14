@@ -1,3 +1,5 @@
+import { API_BASE_URL } from '../../js/utils.js';
+
 // 사용할 HTML 요소(DOM)들 가져오기
 const signupForm = document.getElementById('signup-form');
 const profileInput = document.getElementById('profile-input');
@@ -13,7 +15,6 @@ const emailError = document.getElementById('email-error');
 const passwordError = document.getElementById('password-error');
 const passwordConfirmError = document.getElementById('password-confirm-error');
 const nicknameError = document.getElementById('nickname-error');
-const API_BASE_URL = `http://${window.location.hostname}:8080`;
 
 // 실시간 입력 감지하여 버튼 색상 바꾸기
 function checkInputs() {

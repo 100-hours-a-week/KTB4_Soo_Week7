@@ -1,48 +1,8 @@
-const profileMenu = document.querySelector('.profile-menu');
-const headerProfileBtn = document.querySelector('.header-profile-button');
+import { authFetch } from '../../js/auth.js';
+import { API_BASE_URL, formatDateTime, initProfileMenu, parseResponseBody } from '../../js/utils.js';
+
 const postsList = document.getElementById('posts-list');
 const createPostBtn = document.getElementById('create-post-btn');
-const API_BASE_URL = `http://${window.location.hostname}:8080`;
-
-function toggleProfileMenu() {
-    profileMenu.classList.toggle('is-open');
-}
-
-function closeProfileMenu(event) {
-    if (!profileMenu.contains(event.target)) {
-        profileMenu.classList.remove('is-open');
-    }
-}
-
-function parseResponseBody(response) {
-    return response.text().then(text => {
-        if (!text) {
-            return null;
-        }
-        return JSON.parse(text);
-    });
-}
-
-function formatDateTime(value) {
-    if (!value) {
-        return "-";
-    }
-
-    const date = new Date(value);
-    if (Number.isNaN(date.getTime())) {
-        return value;
-    }
-
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const day = String(date.getDate()).padStart(2, '0');
-    const hours = String(date.getHours()).padStart(2, '0');
-    const minutes = String(date.getMinutes()).padStart(2, '0');
-    const seconds = String(date.getSeconds()).padStart(2, '0');
-
-    return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
-}
-
 function escapeHtml(value) {
     return String(value)
         .replaceAll('&', '&amp;')
@@ -171,8 +131,7 @@ function loadPostList() {
     });
 }
 
-headerProfileBtn.addEventListener('click', toggleProfileMenu);
-document.addEventListener('click', closeProfileMenu);
+initProfileMenu();
 createPostBtn.addEventListener('click', function() {
     window.location.href = '../post-create/index.html';
 });

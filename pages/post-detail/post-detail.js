@@ -1,5 +1,6 @@
-const profileMenu = document.querySelector('.profile-menu');
-const headerProfileBtn = document.querySelector('.header-profile-button');
+import { authFetch } from '../../js/auth.js';
+import { API_BASE_URL, formatDateTime, initProfileMenu, parseResponseBody } from '../../js/utils.js';
+
 const postTitle = document.getElementById('post-title');
 const postAuthor = document.getElementById('post-author');
 const postDate = document.getElementById('post-date');
@@ -19,8 +20,6 @@ const deletePostModal = document.getElementById('delete-post-modal');
 const deleteCommentModal = document.getElementById('delete-comment-modal');
 const confirmPostDeleteBtn = document.getElementById('confirm-post-delete-btn');
 const confirmCommentDeleteBtn = document.getElementById('confirm-comment-delete-btn');
-const API_BASE_URL = `http://${window.location.hostname}:8080`;
-
 const params = new URLSearchParams(window.location.search);
 const postId = params.get('id');
 let currentPost = null;
@@ -31,47 +30,6 @@ let deletingCommentId = null;
 let isSubmittingComment = false;
 let isDeletingPost = false;
 let isDeletingComment = false;
-
-function toggleProfileMenu() {
-    profileMenu.classList.toggle('is-open');
-}
-
-function closeProfileMenu(event) {
-    if (!profileMenu.contains(event.target)) {
-        profileMenu.classList.remove('is-open');
-    }
-}
-
-function parseResponseBody(response) {
-    return response.text()
-        .then(text => {
-            if (!text) {
-                return null;
-            }
-
-            return JSON.parse(text);
-        });
-}
-
-function formatDateTime(value) {
-    if (!value) {
-        return "-";
-    }
-
-    const date = new Date(value);
-    if (Number.isNaN(date.getTime())) {
-        return value;
-    }
-
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const day = String(date.getDate()).padStart(2, '0');
-    const hours = String(date.getHours()).padStart(2, '0');
-    const minutes = String(date.getMinutes()).padStart(2, '0');
-    const seconds = String(date.getSeconds()).padStart(2, '0');
-
-    return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
-}
 
 function formatCount(value) {
     const count = Number(value) || 0;
@@ -589,8 +547,7 @@ function deleteComment() {
     });
 }
 
-headerProfileBtn.addEventListener('click', toggleProfileMenu);
-document.addEventListener('click', closeProfileMenu);
+initProfileMenu();
 
 postEditBtn.addEventListener('click', function() {
     window.location.href = `../post-edit/index.html?id=${postId}`;

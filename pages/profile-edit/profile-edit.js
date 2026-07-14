@@ -1,5 +1,6 @@
-const profileMenu = document.querySelector('.profile-menu');
-const headerProfileBtn = document.querySelector('.header-profile-button');
+import { authFetch, clearAuth } from '../../js/auth.js';
+import { API_BASE_URL, initProfileMenu, parseResponseBody } from '../../js/utils.js';
+
 const emailText = document.getElementById('email-text');
 const nicknameInput = document.getElementById('nickname-input');
 const nicknameError = document.getElementById('nickname-error');
@@ -10,18 +11,6 @@ const modalOverlay = document.querySelector('.modal-overlay');
 const modalCancelBtn = document.querySelector('.modal-cancel-button');
 const modalConfirmBtn = document.querySelector('.modal-confirm-button');
 const toastMessage = document.querySelector('.toast-message');
-const API_BASE_URL = `http://${window.location.hostname}:8080`;
-
-function toggleProfileMenu() {
-    profileMenu.classList.toggle('is-open');
-}
-
-function closeProfileMenu(event) {
-    if (!profileMenu.contains(event.target)) {
-        profileMenu.classList.remove('is-open');
-    }
-}
-
 function setUserInfo(user) {
     if (!user) {
         return;
@@ -105,19 +94,7 @@ function showToast() {
     toastMessage.classList.add('is-visible');
 }
 
-function parseResponseBody(response) {
-    return response.text()
-        .then(text => {
-            if (!text) {
-                return null;
-            }
-
-            return JSON.parse(text);
-        });
-}
-
-headerProfileBtn.addEventListener('click', toggleProfileMenu);
-document.addEventListener('click', closeProfileMenu);
+initProfileMenu();
 
 profileEditForm.addEventListener('submit', function(event) {
     event.preventDefault();

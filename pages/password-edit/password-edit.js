@@ -1,5 +1,6 @@
-const profileMenu = document.querySelector('.profile-menu');
-const headerProfileBtn = document.querySelector('.header-profile-button');
+import { authFetch } from '../../js/auth.js';
+import { API_BASE_URL, initProfileMenu, parseResponseBody } from '../../js/utils.js';
+
 const passwordEditForm = document.getElementById('password-edit-form');
 const passwordInput = document.getElementById('password-input');
 const passwordConfirmInput = document.getElementById('password-confirm-input');
@@ -7,17 +8,6 @@ const passwordEditBtn = document.getElementById('password-edit-submit-btn');
 const passwordError = document.getElementById('password-error');
 const passwordConfirmError = document.getElementById('password-confirm-error');
 const completeMessage = document.querySelector('.complete-message');
-const API_BASE_URL = `http://${window.location.hostname}:8080`;
-
-function toggleProfileMenu() {
-    profileMenu.classList.toggle('is-open');
-}
-
-function closeProfileMenu(event) {
-    if (!profileMenu.contains(event.target)) {
-        profileMenu.classList.remove('is-open');
-    }
-}
 
 function checkInputs() {
     const passwordValue = passwordInput.value.trim();
@@ -28,17 +18,6 @@ function checkInputs() {
     } else {
         passwordEditBtn.style.backgroundColor = "#ACA0EB";
     }
-}
-
-function parseResponseBody(response) {
-    return response.text()
-        .then(text => {
-            if (!text) {
-                return null;
-            }
-
-            return JSON.parse(text);
-        });
 }
 
 function showPasswordServerError(errorCode, errorMessage) {
@@ -90,8 +69,7 @@ function validatePassword() {
     return isSuccess;
 }
 
-headerProfileBtn.addEventListener('click', toggleProfileMenu);
-document.addEventListener('click', closeProfileMenu);
+initProfileMenu();
 passwordInput.addEventListener('input', checkInputs);
 passwordConfirmInput.addEventListener('input', checkInputs);
 
