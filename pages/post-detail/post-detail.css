@@ -300,6 +300,12 @@ button.stat-box.is-liked {
     background-color: #7F6AEE;
 }
 
+#comment-submit-btn:disabled,
+.confirm-btn:disabled {
+    cursor: not-allowed;
+    opacity: 0.55;
+}
+
 .comments-list {
     margin-top: 22px;
     display: flex;

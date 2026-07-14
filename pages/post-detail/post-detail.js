@@ -28,6 +28,9 @@ let isLiked = false;
 let currentLikeCount = 0;
 let editingCommentId = null;
 let deletingCommentId = null;
+let isSubmittingComment = false;
+let isDeletingPost = false;
+let isDeletingComment = false;
 
 function toggleProfileMenu() {
     profileMenu.classList.toggle('is-open');
@@ -462,7 +465,7 @@ function loadPostDetail() {
 function submitComment() {
     const content = commentInput.value.trim();
 
-    if (content === "") {
+    if (content === "" || isSubmittingComment) {
         return;
     }
 
@@ -470,6 +473,10 @@ function submitComment() {
     const url = isEditing
         ? `${API_BASE_URL}/api/v1/posts/${postId}/comments/${editingCommentId}`
         : `${API_BASE_URL}/api/v1/posts/${postId}/comments`;
+
+    isSubmittingComment = true;
+    commentSubmitBtn.disabled = true;
+    commentSubmitBtn.textContent = isEditing ? "수정 중..." : "등록 중...";
 
     authFetch(url, {
         method: isEditing ? 'PATCH' : 'POST',
@@ -503,10 +510,24 @@ function submitComment() {
     .catch(error => {
         console.error("통신 에러 발생:", error);
         alert("서버와 통신 중 오류가 발생했습니다.");
+    })
+    .finally(() => {
+        isSubmittingComment = false;
+        commentSubmitBtn.disabled = false;
+        commentSubmitBtn.textContent = editingCommentId === null ? "댓글 등록" : "댓글 수정";
+        setCommentButtonState();
     });
 }
 
 function deletePost() {
+    if (isDeletingPost) {
+        return;
+    }
+
+    isDeletingPost = true;
+    confirmPostDeleteBtn.disabled = true;
+    confirmPostDeleteBtn.textContent = "삭제 중...";
+
     authFetch(`${API_BASE_URL}/api/v1/posts/${postId}`, {
         method: 'DELETE'
     })
@@ -524,13 +545,22 @@ function deletePost() {
     .catch(error => {
         console.error("통신 에러 발생:", error);
         alert("서버와 통신 중 오류가 발생했습니다.");
+    })
+    .finally(() => {
+        isDeletingPost = false;
+        confirmPostDeleteBtn.disabled = false;
+        confirmPostDeleteBtn.textContent = "확인";
     });
 }
 
 function deleteComment() {
-    if (!deletingCommentId) {
+    if (!deletingCommentId || isDeletingComment) {
         return;
     }
+
+    isDeletingComment = true;
+    confirmCommentDeleteBtn.disabled = true;
+    confirmCommentDeleteBtn.textContent = "삭제 중...";
 
     authFetch(`${API_BASE_URL}/api/v1/posts/${postId}/comments/${deletingCommentId}`, {
         method: 'DELETE'
@@ -551,6 +581,11 @@ function deleteComment() {
     .catch(error => {
         console.error("통신 에러 발생:", error);
         alert("서버와 통신 중 오류가 발생했습니다.");
+    })
+    .finally(() => {
+        isDeletingComment = false;
+        confirmCommentDeleteBtn.disabled = false;
+        confirmCommentDeleteBtn.textContent = "확인";
     });
 }
 
