@@ -193,14 +193,12 @@ function setPostDetail(post) {
         Array.isArray(post.comments) ? countComments(post.comments) : post.commentCount ?? 0
     );
 
-    postImage.classList.remove('is-hidden');
-
     if (post.image) {
+        postImage.classList.remove('is-hidden');
         postImage.style.backgroundImage = `url("${post.image}")`;
-        postImage.classList.add('has-image');
     } else {
+        postImage.classList.add('is-hidden');
         postImage.style.backgroundImage = "";
-        postImage.classList.remove('has-image');
     }
 
     renderComments(post.comments || []);

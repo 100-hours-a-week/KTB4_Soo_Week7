@@ -653,15 +653,13 @@ input[type='file']::file-selector-button {
     border-radius: 10px !important;
 }
 
-.post-image:not(.has-image)::after {
-    content: 'NO ERROR SCREENSHOT';
-    display: grid;
-    min-height: 280px;
-    place-items: center;
-    color: #70786f;
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 12px;
-    font-weight: 700;
+.post-image.is-hidden {
+    display: none !important;
+    width: 0 !important;
+    min-height: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: 0 !important;
 }
 
 .post-content {
@@ -1249,10 +1247,6 @@ main > h2::after {
     .post-image {
         width: calc(100% - 32px) !important;
         min-height: 190px !important;
-    }
-
-    .post-image:not(.has-image)::after {
-        min-height: 190px;
     }
 
     .post-stats {
