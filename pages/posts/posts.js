@@ -1,5 +1,5 @@
-import { authFetch } from '../../js/auth.js';
-import { API_BASE_URL, formatDateTime, initProfileMenu, parseResponseBody } from '../../js/utils.js';
+import { apiFetch, handleApiError } from '../../js/api.js';
+import { API_BASE_URL, formatDateTime, initProfileMenu } from '../../js/utils.js';
 
 const postsList = document.getElementById('posts-list');
 const createPostBtn = document.getElementById('create-post-btn');
@@ -97,24 +97,10 @@ function renderPosts(posts) {
 }
 
 function loadPostList() {
-    authFetch(`${API_BASE_URL}/api/v1/posts`, {
+    apiFetch(`${API_BASE_URL}/api/v1/posts`, {
         method: 'GET'
     })
-    .then(response => {
-        return parseResponseBody(response).then(resData => {
-            if (response.ok) {
-                return resData;
-            }
-
-            showPostServerError(resData?.code, resData?.message);
-            return null;
-        });
-    })
     .then(resData => {
-        if (!resData) {
-            return;
-        }
-
         const posts = Array.isArray(resData.data)
             ? resData.data
             : resData.data?.posts ?? resData.data?.items ?? [];
@@ -122,7 +108,7 @@ function loadPostList() {
         renderPosts(posts);
     })
     .catch(error => {
-        console.error('통신 에러 발생:', error);
+        handleApiError(error, showPostServerError);
         postsList.innerHTML = '';
         const empty = document.createElement('article');
         empty.className = 'posts-empty';

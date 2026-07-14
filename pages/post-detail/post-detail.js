@@ -1,5 +1,5 @@
-import { authFetch } from '../../js/auth.js';
-import { API_BASE_URL, formatDateTime, initProfileMenu, parseResponseBody } from '../../js/utils.js';
+import { apiFetch, handleApiError } from '../../js/api.js';
+import { API_BASE_URL, formatDateTime, initProfileMenu } from '../../js/utils.js';
 
 const postTitle = document.getElementById('post-title');
 const postAuthor = document.getElementById('post-author');
@@ -233,7 +233,7 @@ function buildReplyComposer(parentCommentId, parentAuthor) {
         submitBtn.disabled = true;
         submitBtn.textContent = '등록 중...';
 
-        authFetch(`${API_BASE_URL}/api/v1/posts/${postId}/comments`, {
+        apiFetch(`${API_BASE_URL}/api/v1/posts/${postId}/comments`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -243,23 +243,14 @@ function buildReplyComposer(parentCommentId, parentAuthor) {
                 content
             })
         })
-        .then(response => {
-            return parseResponseBody(response).then(resData => ({ response, resData }));
-        })
-        .then(({ response, resData }) => {
-            if (!response.ok) {
-                showServerError(resData?.code, resData?.message);
-                return;
-            }
-
+        .then(() => {
             textarea.value = '';
             characterCount.textContent = '0 / 500';
             form.hidden = true;
             loadPostDetail();
         })
         .catch(error => {
-            console.error('대댓글 등록 실패:', error);
-            alert('답글 등록 중 서버와 통신할 수 없습니다.');
+            handleApiError(error, showServerError, '답글 등록 중 서버와 통신할 수 없습니다.');
         })
         .finally(() => {
             isSubmitting = false;
@@ -392,19 +383,8 @@ function loadPostDetail() {
         return;
     }
 
-    authFetch(`${API_BASE_URL}/api/v1/posts/${postId}`, {
+        apiFetch(`${API_BASE_URL}/api/v1/posts/${postId}`, {
         method: 'GET'
-    })
-    .then(response => {
-        return parseResponseBody(response)
-            .then(resData => {
-                if (response.ok) {
-                    return resData;
-                }
-
-                showServerError(resData?.code, resData?.message);
-                return null;
-            });
     })
     .then(resData => {
         if (!resData?.data) {
@@ -415,8 +395,7 @@ function loadPostDetail() {
         setPostDetail(resData.data);
     })
     .catch(error => {
-        console.error("통신 에러 발생:", error);
-        alert("서버와 통신 중 오류가 발생했습니다.");
+        handleApiError(error, showServerError);
     });
 }
 
@@ -436,23 +415,12 @@ function submitComment() {
     commentSubmitBtn.disabled = true;
     commentSubmitBtn.textContent = isEditing ? "수정 중..." : "등록 중...";
 
-    authFetch(url, {
+    apiFetch(url, {
         method: isEditing ? 'PATCH' : 'POST',
         headers: {
             'Content-Type': 'application/json'
         },
         body: JSON.stringify({ content })
-    })
-    .then(response => {
-        return parseResponseBody(response)
-            .then(resData => {
-                if (response.ok) {
-                    return resData;
-                }
-
-                showServerError(resData?.code, resData?.message);
-                return null;
-            });
     })
     .then(resData => {
         if (!resData) {
@@ -466,8 +434,7 @@ function submitComment() {
         loadPostDetail();
     })
     .catch(error => {
-        console.error("통신 에러 발생:", error);
-        alert("서버와 통신 중 오류가 발생했습니다.");
+        handleApiError(error, showServerError);
     })
     .finally(() => {
         isSubmittingComment = false;
@@ -486,23 +453,14 @@ function deletePost() {
     confirmPostDeleteBtn.disabled = true;
     confirmPostDeleteBtn.textContent = "삭제 중...";
 
-    authFetch(`${API_BASE_URL}/api/v1/posts/${postId}`, {
+    apiFetch(`${API_BASE_URL}/api/v1/posts/${postId}`, {
         method: 'DELETE'
     })
-    .then(response => {
-        if (response.ok) {
-            window.location.href = "../posts/index.html";
-            return null;
-        }
-
-        return parseResponseBody(response)
-            .then(resData => {
-                showServerError(resData?.code, resData?.message);
-            });
+    .then(() => {
+        window.location.href = "../posts/index.html";
     })
     .catch(error => {
-        console.error("통신 에러 발생:", error);
-        alert("서버와 통신 중 오류가 발생했습니다.");
+        handleApiError(error, showServerError);
     })
     .finally(() => {
         isDeletingPost = false;
@@ -520,25 +478,16 @@ function deleteComment() {
     confirmCommentDeleteBtn.disabled = true;
     confirmCommentDeleteBtn.textContent = "삭제 중...";
 
-    authFetch(`${API_BASE_URL}/api/v1/posts/${postId}/comments/${deletingCommentId}`, {
+    apiFetch(`${API_BASE_URL}/api/v1/posts/${postId}/comments/${deletingCommentId}`, {
         method: 'DELETE'
     })
-    .then(response => {
-        if (response.ok) {
-            deletingCommentId = null;
-            closeModal(deleteCommentModal);
-            loadPostDetail();
-            return null;
-        }
-
-        return parseResponseBody(response)
-            .then(resData => {
-                showServerError(resData?.code, resData?.message);
-            });
+    .then(() => {
+        deletingCommentId = null;
+        closeModal(deleteCommentModal);
+        loadPostDetail();
     })
     .catch(error => {
-        console.error("통신 에러 발생:", error);
-        alert("서버와 통신 중 오류가 발생했습니다.");
+        handleApiError(error, showServerError);
     })
     .finally(() => {
         isDeletingComment = false;
@@ -588,21 +537,11 @@ likeBtn.addEventListener('click', function() {
     likeBtn.classList.toggle('is-liked', isLiked);
     likeCount.textContent = formatCount(currentLikeCount);
 
-    authFetch(`${API_BASE_URL}/api/v1/posts/${postId}/like`, {
+    apiFetch(`${API_BASE_URL}/api/v1/posts/${postId}/like`, {
         method: 'POST'
     })
-    .then(response => {
-        if (!response.ok) {
-            return parseResponseBody(response).then(resData => {
-                showServerError(resData?.code, resData?.message);
-                throw new Error('좋아요 요청에 실패했습니다.');
-            });
-        }
-
-        return null;
-    })
     .catch(error => {
-        console.error('좋아요 처리 실패:', error);
+        handleApiError(error, showServerError, '같은 문제 처리 중 오류가 발생했습니다.');
         isLiked = previousLiked;
         currentLikeCount = previousLikeCount;
         likeBtn.classList.toggle('is-liked', isLiked);

@@ -1,5 +1,5 @@
-import { authFetch } from '../../js/auth.js';
-import { API_BASE_URL, initProfileMenu, parseResponseBody } from '../../js/utils.js';
+import { apiFetch, handleApiError } from '../../js/api.js';
+import { API_BASE_URL, initProfileMenu } from '../../js/utils.js';
 
 const postCreateForm = document.getElementById('post-create-form');
 const titleInput = document.getElementById('title-input');
@@ -74,29 +74,14 @@ postCreateForm.addEventListener('submit', function(event) {
         content: contentValue
     };
 
-    authFetch(`${API_BASE_URL}/api/v1/posts`, {
+    apiFetch(`${API_BASE_URL}/api/v1/posts`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
         },
         body: JSON.stringify(postData)
     })
-    .then(response => {
-        return parseResponseBody(response)
-            .then(resData => {
-                if (response.ok) {
-                    return resData;
-                }
-
-                showPostServerError(resData?.code, resData?.message);
-                return null;
-            });
-    })
     .then(resData => {
-        if (!resData) {
-            return;
-        }
-
         if (resData.data == null) {
             alert("생성된 게시글 ID가 응답에 포함되지 않았습니다.");
             return;
@@ -106,7 +91,6 @@ postCreateForm.addEventListener('submit', function(event) {
         window.location.href = `../post-detail/index.html?id=${resData.data}`;
     })
     .catch(error => {
-        console.error("통신 에러 발생:", error);
-        alert("서버와 통신 중 오류가 발생했습니다.");
+        handleApiError(error, showPostServerError);
     });
 });

@@ -1,5 +1,5 @@
-import { authFetch } from '../../js/auth.js';
-import { API_BASE_URL, initProfileMenu, parseResponseBody } from '../../js/utils.js';
+import { apiFetch, handleApiError } from '../../js/api.js';
+import { API_BASE_URL, initProfileMenu } from '../../js/utils.js';
 
 const passwordEditForm = document.getElementById('password-edit-form');
 const passwordInput = document.getElementById('password-input');
@@ -84,31 +84,18 @@ passwordEditForm.addEventListener('submit', function(event) {
         newPassword: passwordInput.value.trim()
     };
 
-    authFetch(`${API_BASE_URL}/api/v1/users/me/password`, {
+    apiFetch(`${API_BASE_URL}/api/v1/users/me/password`, {
         method: 'PATCH',
         headers: {
             'Content-Type': 'application/json'
         },
         body: JSON.stringify(updateData)
     })
-    .then(response => {
-        if (response.ok) {
-            passwordEditBtn.style.backgroundColor = "#7F6AEE";
-            completeMessage.classList.add('is-visible');
-            return null;
-        }
-
-        return parseResponseBody(response);
-    })
-    .then(resData => {
-        if (!resData) {
-            return;
-        }
-
-        showPasswordServerError(resData.code, resData.message);
+    .then(() => {
+        passwordEditBtn.style.backgroundColor = "#7F6AEE";
+        completeMessage.classList.add('is-visible');
     })
     .catch(error => {
-        console.error("통신 에러 발생:", error);
-        alert("서버와 통신 중 오류가 발생했습니다.");
+        handleApiError(error, showPasswordServerError);
     });
 });

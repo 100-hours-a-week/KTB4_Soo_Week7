@@ -1,4 +1,5 @@
 import { saveTokens } from '../../js/auth.js';
+import { ApiError, publicApiFetch } from '../../js/api.js';
 import { API_BASE_URL } from '../../js/utils.js';
 
 // 사용할 HTML 요소(DOM)들 가져오기
@@ -74,34 +75,31 @@ loginForm.addEventListener('submit', function(event) {
         };
 
         // Fetch API를 사용하여 백엔드 서버에 POST 요청을 보냄
-        fetch(`${API_BASE_URL}/api/v1/auth/login`, {
+        publicApiFetch(`${API_BASE_URL}/api/v1/auth/login`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json' 
             },
             body: JSON.stringify(loginData) 
         })
-        .then(response => response.json()) 
         .then(resData => {
-            console.log("서버 응답 데이터:", resData); 
-
-            if (resData.code === "LOGIN_SUCCESS") {
-                saveTokens(resData.data);
-                localStorage.setItem('loginUserEmail', emailValue);
-                alert("로그인에 성공했습니다!");
-                window.location.href = "../posts/index.html";
-            } else {
-                
-                if (resData.code === "USER_NOT_FOUND") {
-                    emailError.textContent = `* ${resData.message}`;
-                } else if (resData.code === "LOGIN_FAILED") {
-                    passwordError.textContent = `* ${resData.message}`;
-                } else {
-                    alert(resData.message || "로그인 중 알 수 없는 에러가 발생했습니다.");
-                }
-            }
+            saveTokens(resData.data);
+            localStorage.setItem('loginUserEmail', emailValue);
+            alert("로그인에 성공했습니다!");
+            window.location.href = "../posts/index.html";
         })
         .catch(error => {
+            if (error instanceof ApiError) {
+                if (error.code === "USER_NOT_FOUND") {
+                    emailError.textContent = `* ${error.message}`;
+                } else if (error.code === "LOGIN_FAILED") {
+                    passwordError.textContent = `* ${error.message}`;
+                } else {
+                    alert(error.message);
+                }
+                return;
+            }
+
             console.error("통신 에러 발생:", error);
             alert("서버와 통신 중 오류가 발생했습니다.");
         });

@@ -1,5 +1,6 @@
-import { authFetch, clearAuth } from '../../js/auth.js';
-import { API_BASE_URL, initProfileMenu, parseResponseBody } from '../../js/utils.js';
+import { clearAuth } from '../../js/auth.js';
+import { apiFetch, handleApiError } from '../../js/api.js';
+import { API_BASE_URL, initProfileMenu } from '../../js/utils.js';
 
 const emailText = document.getElementById('email-text');
 const nicknameInput = document.getElementById('nickname-input');
@@ -26,15 +27,8 @@ function setUserInfo(user) {
 }
 
 function loadUserInfo() {
-    authFetch(`${API_BASE_URL}/api/v1/users/me`, {
+    apiFetch(`${API_BASE_URL}/api/v1/users/me`, {
         method: 'GET'
-    })
-    .then(response => {
-        if (!response.ok) {
-            throw new Error('현재 사용자 조회 API를 사용할 수 없습니다.');
-        }
-
-        return response.json();
     })
     .then(resData => {
         const user = resData.data || resData;
@@ -107,33 +101,20 @@ profileEditForm.addEventListener('submit', function(event) {
         newNickname: nicknameInput.value.trim()
     };
 
-    authFetch(`${API_BASE_URL}/api/v1/users/me`, {
+    apiFetch(`${API_BASE_URL}/api/v1/users/me`, {
         method: 'PATCH',
         headers: {
             'Content-Type': 'application/json'
         },
         body: JSON.stringify(updateData)
     })
-    .then(response => {
-        if (response.ok) {
-            editSubmitBtn.style.backgroundColor = "#7F6AEE";
-            localStorage.setItem('loginUserNickname', updateData.newNickname);
-            showToast();
-            return null;
-        }
-
-        return parseResponseBody(response);
-    })
-    .then(resData => {
-        if (!resData) {
-            return;
-        }
-
-        showNicknameServerError(resData.code, resData.message);
+    .then(() => {
+        editSubmitBtn.style.backgroundColor = "#7F6AEE";
+        localStorage.setItem('loginUserNickname', updateData.newNickname);
+        showToast();
     })
     .catch(error => {
-        console.error("통신 에러 발생:", error);
-        alert("서버와 통신 중 오류가 발생했습니다.");
+        handleApiError(error, showNicknameServerError);
     });
 });
 

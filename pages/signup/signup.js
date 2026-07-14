@@ -1,3 +1,4 @@
+import { ApiError, publicApiFetch } from '../../js/api.js';
 import { API_BASE_URL } from '../../js/utils.js';
 
 // 사용할 HTML 요소(DOM)들 가져오기
@@ -15,6 +16,25 @@ const emailError = document.getElementById('email-error');
 const passwordError = document.getElementById('password-error');
 const passwordConfirmError = document.getElementById('password-confirm-error');
 const nicknameError = document.getElementById('nickname-error');
+
+function showSignupServerError(errorCode, errorMessage) {
+    if (errorCode === "DUPLICATE_EMAIL" || errorCode === "EMAIL_EMPTY" || errorCode === "INVALID_EMAIL_FORMAT") {
+        emailError.textContent = `* ${errorMessage || "이메일 형식을 확인해주세요."}`;
+        return;
+    }
+
+    if (errorCode === "PASSWORD_EMPTY" || errorCode === "INVALID_PASSWORD_LENGTH" || errorCode === "INVALID_PASSWORD_COMPLEXITY") {
+        passwordError.textContent = `* ${errorMessage || "비밀번호 형식을 확인해주세요."}`;
+        return;
+    }
+
+    if (errorCode === "DUPLICATE_NICKNAME" || errorCode === "NICKNAME_EMPTY" || errorCode === "INVALID_NICKNAME_LENGTH" || errorCode === "NICKNAME_CONTAINS_SPACE") {
+        nicknameError.textContent = `* ${errorMessage || "닉네임 형식을 확인해주세요."}`;
+        return;
+    }
+
+    alert(errorMessage || "회원가입 중 알 수 없는 에러가 발생했습니다.");
+}
 
 // 실시간 입력 감지하여 버튼 색상 바꾸기
 function checkInputs() {
@@ -126,48 +146,25 @@ signupForm.addEventListener('submit', function(event) {
             nickname: nicknameValue
         };
 
-        fetch(`${API_BASE_URL}/api/v1/auth/signup`, {
+        publicApiFetch(`${API_BASE_URL}/api/v1/auth/signup`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify(signupData)
         })
-        .then(response => response.json())
-        .then(resData => {
-            console.log("서버 응답 데이터:", resData);
-
-            if (resData.code === "SIGNUP_SUCCESS") {
-                localStorage.setItem('loginUserEmail', emailValue);
-                localStorage.setItem('loginUserNickname', nicknameValue);
-                alert("회원가입에 성공했습니다!");
-                window.location.href = "../login/index.html";
-            } else if (resData.code === "DUPLICATE_EMAIL") {
-                emailError.textContent = `* ${resData.message}`;
-            } else if (resData.code === "DUPLICATE_NICKNAME") {
-                nicknameError.textContent = `* ${resData.message}`;
-            } else if (
-                resData.code === "EMAIL_EMPTY" ||
-                resData.code === "INVALID_EMAIL_FORMAT"
-            ) {
-                emailError.textContent = `* ${resData.message || "올바른 이메일 주소 형식을 입력해주세요."}`;
-            } else if (
-                resData.code === "PASSWORD_EMPTY" ||
-                resData.code === "INVALID_PASSWORD_LENGTH" ||
-                resData.code === "INVALID_PASSWORD_COMPLEXITY"
-            ) {
-                passwordError.textContent = `* ${resData.message || "비밀번호 형식을 확인해주세요."}`;
-            } else if (
-                resData.code === "NICKNAME_EMPTY" ||
-                resData.code === "INVALID_NICKNAME_LENGTH" ||
-                resData.code === "NICKNAME_CONTAINS_SPACE"
-            ) {
-                nicknameError.textContent = `* ${resData.message || "닉네임 형식을 확인해주세요."}`;
-            } else {
-                alert(resData.message || "회원가입 중 알 수 없는 에러가 발생했습니다.");
-            }
+        .then(() => {
+            localStorage.setItem('loginUserEmail', emailValue);
+            localStorage.setItem('loginUserNickname', nicknameValue);
+            alert("회원가입에 성공했습니다!");
+            window.location.href = "../login/index.html";
         })
         .catch(error => {
+            if (error instanceof ApiError) {
+                showSignupServerError(error.code, error.message);
+                return;
+            }
+
             console.error("통신 에러 발생:", error);
             alert("서버와 통신 중 오류가 발생했습니다.");
         });
