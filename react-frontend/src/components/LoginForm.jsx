@@ -1,12 +1,33 @@
 import { useState } from 'react';
+import { login } from '../services/authService';
 
 function LoginForm() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
-    console.log('로그인 시도', { email, password });
+    setErrorMessage('');
+
+    if (!email.trim() || !password.trim()) {
+      setErrorMessage('이메일과 비밀번호를 모두 입력해주세요.');
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    try {
+      await login({ email: email.trim(), password });
+      window.alert('로그인에 성공했습니다!');
+      window.location.href = '/posts';
+    } catch (error) {
+      const message = error?.message || '로그인에 실패했습니다.';
+      setErrorMessage(message);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -30,7 +51,10 @@ function LoginForm() {
           placeholder="비밀번호를 입력하세요"
         />
       </label>
-      <button type="submit">로그인</button>
+      {errorMessage && <p className="login-error">{errorMessage}</p>}
+      <button type="submit" disabled={isSubmitting}>
+        {isSubmitting ? '로그인 중...' : '로그인'}
+      </button>
     </form>
   );
 }
