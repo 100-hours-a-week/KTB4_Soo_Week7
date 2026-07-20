@@ -60,3 +60,37 @@
   color: #dc2626;
   font-size: 14px;
 }
+
+.posts-page {
+  width: 100%;
+  max-width: 840px;
+  padding: 24px;
+}
+
+.posts-header {
+  margin-bottom: 20px;
+}
+
+.posts-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.post-card {
+  padding: 18px;
+  border-radius: 12px;
+  background: white;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+}
+
+.posts-status,
+.posts-error,
+.posts-empty {
+  color: #4b5563;
+  margin: 8px 0 16px;
+}
+
+.posts-error {
+  color: #dc2626;
+}
