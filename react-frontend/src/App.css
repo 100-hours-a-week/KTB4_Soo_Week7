@@ -94,3 +94,9 @@
 .posts-error {
   color: #dc2626;
 }
+
+.post-meta {
+  margin-top: 12px;
+  color: #6b7280;
+  font-size: 14px;
+}
