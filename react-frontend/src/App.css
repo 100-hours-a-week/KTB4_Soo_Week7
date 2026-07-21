@@ -173,3 +173,41 @@
   border-radius: 10px;
   background: #f8f5ff;
 }
+
+.post-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 18px;
+}
+
+.secondary-button,
+.danger-button,
+.text-button {
+  padding: 8px 14px;
+  border: 0;
+  border-radius: 8px;
+  font: inherit;
+  cursor: pointer;
+}
+
+.secondary-button {
+  background: #ede9fe;
+  color: #6d28d9;
+  text-decoration: none;
+}
+
+.danger-button {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+.danger-button:disabled {
+  cursor: wait;
+  opacity: 0.65;
+}
+
+.text-button {
+  background: transparent;
+  color: #6b7280;
+}

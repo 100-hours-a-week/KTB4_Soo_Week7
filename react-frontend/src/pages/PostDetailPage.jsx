@@ -1,15 +1,17 @@
 import { useEffect, useState } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import { apiRequest } from '../services/apiClient';
 import CommentList from './CommentList';
 
 function PostDetailPage() {
   const { postId } = useParams();
+  const navigate = useNavigate();
   const [post, setPost] = useState(null);
   const [comments, setComments] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState('');
   const [reloadVersion, setReloadVersion] = useState(0);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   useEffect(() => {
     async function loadPost() {
@@ -31,6 +33,22 @@ function PostDetailPage() {
     }
   }, [postId, reloadVersion]);
 
+  const handleDelete = async () => {
+    const shouldDelete = window.confirm('게시글을 삭제하시겠습니까?');
+    if (!shouldDelete || isDeleting) return;
+
+    setIsDeleting(true);
+    setErrorMessage('');
+
+    try {
+      await apiRequest(`/api/v1/posts/${postId}`, { method: 'DELETE' });
+      navigate('/posts', { replace: true });
+    } catch (error) {
+      setErrorMessage(error.message || '게시글 삭제에 실패했습니다.');
+      setIsDeleting(false);
+    }
+  };
+
   if (isLoading) {
     return <p className="posts-status">불러오는 중...</p>;
   }
@@ -49,7 +67,20 @@ function PostDetailPage() {
       <article className="post-card">
         <h1>{post.title || '제목 없음'}</h1>
         <p>{post.content || '내용이 없습니다.'}</p>
-        <p className="post-meta">작성자: {post.author || '미등록'}</p>
+        <p className="post-meta">
+          작성자: {post.nickname || post.author || '미등록'}
+        </p>
+        <div className="post-actions">
+          <Link to={`/posts/${postId}/edit`} className="secondary-button">수정</Link>
+          <button
+            type="button"
+            className="danger-button"
+            onClick={handleDelete}
+            disabled={isDeleting}
+          >
+            {isDeleting ? '삭제 중...' : '삭제'}
+          </button>
+        </div>
       </article>
 
       <CommentList
