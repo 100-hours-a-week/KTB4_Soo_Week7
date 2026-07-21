@@ -1,12 +1,23 @@
 import { useEffect, useState } from 'react';
-import { Link, useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { apiRequest } from '../services/apiClient';
 import CommentList from './CommentList';
+import AppHeader from '../components/AppHeader';
+import { usePageStyles } from '../hooks/usePageStyles';
+import pageStyles from '../../../pages/post-detail/post-detail.css?inline';
 
 function formatDateTime(value) {
   if (!value) return '-';
   const date = new Date(value);
-  return Number.isNaN(date.getTime()) ? value : date.toLocaleString('ko-KR');
+  if (Number.isNaN(date.getTime())) return value;
+
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  const hours = String(date.getHours()).padStart(2, '0');
+  const minutes = String(date.getMinutes()).padStart(2, '0');
+  const seconds = String(date.getSeconds()).padStart(2, '0');
+  return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
 }
 
 function countComments(items) {
@@ -17,6 +28,7 @@ function countComments(items) {
 }
 
 function PostDetailPage() {
+  usePageStyles('post-detail', pageStyles);
   const { postId } = useParams();
   const navigate = useNavigate();
   const [post, setPost] = useState(null);
@@ -29,6 +41,7 @@ function PostDetailPage() {
   const [likeCount, setLikeCount] = useState(0);
   const [isUpdatingLike, setIsUpdatingLike] = useState(false);
   const [actionError, setActionError] = useState('');
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
   useEffect(() => {
     async function loadPost() {
@@ -53,8 +66,7 @@ function PostDetailPage() {
   }, [postId, reloadVersion]);
 
   const handleDelete = async () => {
-    const shouldDelete = window.confirm('게시글을 삭제하시겠습니까?');
-    if (!shouldDelete || isDeleting) return;
+    if (isDeleting) return;
 
     setIsDeleting(true);
     setActionError('');
@@ -104,51 +116,35 @@ function PostDetailPage() {
   }
 
   return (
-    <main className="posts-page">
-      <Link to="/posts" className="form-link">← 목록으로</Link>
-      <article className="post-card">
-        <h1>{post.title || '제목 없음'}</h1>
-        <div className="post-detail-meta">
-          <span>작성자 {post.nickname || post.author || '미등록'}</span>
-          <time>{formatDateTime(post.updatedAt || post.createdAt)}</time>
+    <>
+      <AppHeader backTo="/posts" backLabel="게시글 목록으로 이동" />
+      <main className="post-detail-container">
+        <article className="post-detail">
+          <header className="post-head">
+            <h1>{post.title || '제목 없음'}</h1>
+            <div className="post-meta-row">
+              <div className="post-author"><span className="author-avatar" aria-hidden="true" /><strong>{post.nickname || post.author || '작성자'}</strong><time>{formatDateTime(post.updatedAt || post.createdAt)}</time></div>
+              <div className="post-actions"><button type="button" onClick={() => navigate(`/posts/${postId}/edit`)}>수정</button><button type="button" onClick={() => setIsDeleteModalOpen(true)}>삭제</button></div>
+            </div>
+          </header>
+          {post.image && <img className="post-image react-post-image" src={post.image} alt="게시글 이미지" />}
+          <p className="post-content">{post.content || '내용이 없습니다.'}</p>
+          <section className="post-stats" aria-label="게시글 통계">
+            <button type="button" className={`stat-box${isLiked ? ' is-liked' : ''}`} onClick={handleLike} disabled={isUpdatingLike} aria-pressed={isLiked}><strong>{likeCount}</strong><span>같은 문제</span></button>
+            <div className="stat-box"><strong>{Number(post.viewCount ?? post.views) || 0}</strong><span>조회</span></div>
+            <div className="stat-box"><strong>{countComments(comments)}</strong><span>댓글</span></div>
+          </section>
+          {actionError && <p className="error-text">{actionError}</p>}
+        </article>
+        <CommentList postId={postId} comments={comments} onCommentAdded={() => setReloadVersion((version) => version + 1)} />
+      </main>
+      <div className={`modal-overlay${isDeleteModalOpen ? ' is-open' : ''}`} aria-hidden={!isDeleteModalOpen} onMouseDown={(event) => { if (event.target === event.currentTarget) setIsDeleteModalOpen(false); }}>
+        <div className="confirm-modal" role="dialog" aria-modal="true" aria-labelledby="delete-post-title">
+          <h2 id="delete-post-title">게시글을 삭제하시겠습니까?</h2><p>삭제한 내용은 복구 할 수 없습니다.</p>
+          <div className="modal-actions"><button type="button" className="cancel-btn" onClick={() => setIsDeleteModalOpen(false)}>취소</button><button type="button" className="confirm-btn" onClick={handleDelete} disabled={isDeleting}>{isDeleting ? '삭제 중...' : '확인'}</button></div>
         </div>
-        {post.image && (
-          <img className="post-image" src={post.image} alt="게시글 첨부 이미지" />
-        )}
-        <p>{post.content || '내용이 없습니다.'}</p>
-        <div className="post-stats">
-          <button
-            type="button"
-            className={`like-button${isLiked ? ' is-liked' : ''}`}
-            onClick={handleLike}
-            disabled={isUpdatingLike}
-            aria-pressed={isLiked}
-          >
-            ♥ 같은 문제 {likeCount}
-          </button>
-          <span>댓글 {countComments(comments)}</span>
-          <span>조회 {Number(post.viewCount ?? post.views) || 0}</span>
-        </div>
-        {actionError && <p className="login-error">{actionError}</p>}
-        <div className="post-actions">
-          <Link to={`/posts/${postId}/edit`} className="secondary-button">수정</Link>
-          <button
-            type="button"
-            className="danger-button"
-            onClick={handleDelete}
-            disabled={isDeleting}
-          >
-            {isDeleting ? '삭제 중...' : '삭제'}
-          </button>
-        </div>
-      </article>
-
-      <CommentList
-        postId={postId}
-        comments={comments}
-        onCommentAdded={() => setReloadVersion((version) => version + 1)}
-      />
-    </main>
+      </div>
+    </>
   );
 }
 

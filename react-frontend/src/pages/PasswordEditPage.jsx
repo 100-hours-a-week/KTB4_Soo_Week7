@@ -1,10 +1,13 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
 import { apiRequest } from '../services/apiClient';
+import AppHeader from '../components/AppHeader';
+import { usePageStyles } from '../hooks/usePageStyles';
+import pageStyles from '../../../pages/password-edit/password-edit.css?inline';
 
 const PASSWORD_PATTERN = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,20}$/;
 
 function PasswordEditPage() {
+  usePageStyles('password-edit', pageStyles);
   const [password, setPassword] = useState('');
   const [passwordConfirm, setPasswordConfirm] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -42,33 +45,20 @@ function PasswordEditPage() {
   };
 
   return (
-    <form className="login-form" onSubmit={handleSubmit}>
-      <h1>비밀번호 변경</h1>
-      <label>
-        새 비밀번호
-        <input
-          type="password"
-          value={password}
-          onChange={(event) => setPassword(event.target.value)}
-          autoComplete="new-password"
-        />
-      </label>
-      <label>
-        새 비밀번호 확인
-        <input
-          type="password"
-          value={passwordConfirm}
-          onChange={(event) => setPasswordConfirm(event.target.value)}
-          autoComplete="new-password"
-        />
-      </label>
-      {errorMessage && <p className="login-error">{errorMessage}</p>}
-      {successMessage && <p className="success-message">{successMessage}</p>}
-      <button type="submit" disabled={isSubmitting}>
-        {isSubmitting ? '수정 중...' : '수정하기'}
-      </button>
-      <Link to="/users/me" className="form-link">회원 정보로 돌아가기</Link>
-    </form>
+    <>
+      <AppHeader />
+      <main className="password-edit-container">
+        <h2>접근 코드 변경</h2>
+        <form id="password-edit-form" onSubmit={handleSubmit}>
+          <div className="password-form-panel">
+            <div className="input-group"><label htmlFor="password-input">비밀번호</label><input id="password-input" type="password" value={password} onChange={(event) => setPassword(event.target.value)} placeholder="비밀번호를 입력하세요" autoComplete="new-password" /><p className="error-text">{errorMessage}</p></div>
+            <div className="input-group"><label htmlFor="password-confirm-input">비밀번호 확인</label><input id="password-confirm-input" type="password" value={passwordConfirm} onChange={(event) => setPasswordConfirm(event.target.value)} placeholder="비밀번호를 한번 더 입력하세요" autoComplete="new-password" /><p className="error-text" /></div>
+          </div>
+          <button type="submit" id="password-edit-submit-btn" disabled={isSubmitting}>{isSubmitting ? '수정 중...' : '수정하기'}</button>
+        </form>
+        {successMessage && <div className="complete-message is-visible">수정완료</div>}
+      </main>
+    </>
   );
 }
 

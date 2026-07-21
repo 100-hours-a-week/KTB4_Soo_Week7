@@ -18,7 +18,15 @@ function getCommentDate(comment) {
   if (!value) return '';
 
   const date = new Date(value);
-  return Number.isNaN(date.getTime()) ? value : date.toLocaleString('ko-KR');
+  if (Number.isNaN(date.getTime())) return value;
+
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  const hours = String(date.getHours()).padStart(2, '0');
+  const minutes = String(date.getMinutes()).padStart(2, '0');
+  const seconds = String(date.getSeconds()).padStart(2, '0');
+  return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
 }
 
 function CommentItem({ comment, isReply, onEdit, onDelete, onReply }) {
@@ -27,18 +35,19 @@ function CommentItem({ comment, isReply, onEdit, onDelete, onReply }) {
 
   return (
     <article className={`comment-item${isReply ? ' is-reply' : ''}`}>
+      <span className="author-avatar" aria-hidden="true" />
       <div className="comment-body">
         <div className="comment-meta">
           <strong>{isDeleted ? '알 수 없는 사용자' : getCommentAuthor(comment)}</strong>
           <time>{getCommentDate(comment)}</time>
         </div>
-        <p>{isDeleted ? '삭제된 댓글입니다.' : getCommentContent(comment)}</p>
+        <p className="comment-content">{isDeleted ? '삭제된 댓글입니다.' : getCommentContent(comment)}</p>
       </div>
 
       {!isDeleted && (
         <div className="comment-actions">
           {!isReply && (
-            <button type="button" onClick={() => onReply(comment)}>
+            <button type="button" className="reply-toggle-btn" onClick={() => onReply(comment)}>
               답글
             </button>
           )}
@@ -56,7 +65,8 @@ function CommentList({ postId, comments, onCommentAdded }) {
   const [replyTarget, setReplyTarget] = useState(null);
   const [replyContent, setReplyContent] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [deletingCommentId, setDeletingCommentId] = useState(null);
+  const [pendingDeleteId, setPendingDeleteId] = useState(null);
+  const [isDeletingComment, setIsDeletingComment] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
 
   const refreshComments = () => {
@@ -107,22 +117,22 @@ function CommentList({ postId, comments, onCommentAdded }) {
     setErrorMessage('');
   };
 
-  const handleDelete = async (commentId) => {
-    if (!window.confirm('댓글을 삭제하시겠습니까?') || deletingCommentId) return;
-
-    setDeletingCommentId(commentId);
+  const handleDelete = async () => {
+    if (!pendingDeleteId || isDeletingComment) return;
+    setIsDeletingComment(true);
     setErrorMessage('');
 
     try {
-      await apiRequest(`/api/v1/posts/${postId}/comments/${commentId}`, {
+      await apiRequest(`/api/v1/posts/${postId}/comments/${pendingDeleteId}`, {
         method: 'DELETE',
       });
-      if (editingCommentId === commentId) resetEditor();
+      if (editingCommentId === pendingDeleteId) resetEditor();
+      setPendingDeleteId(null);
       refreshComments();
     } catch (error) {
       setErrorMessage(error.message || '댓글 삭제에 실패했습니다.');
     } finally {
-      setDeletingCommentId(null);
+      setIsDeletingComment(false);
     }
   };
 
@@ -159,31 +169,33 @@ function CommentList({ postId, comments, onCommentAdded }) {
   };
 
   return (
-    <section className="comment-section">
-      <h2>댓글</h2>
-      <form className="comment-form" onSubmit={handleSubmit}>
+    <>
+    <section className="comment-panel">
+      <form onSubmit={handleSubmit}>
         <textarea
           value={content}
           onChange={(event) => setContent(event.target.value)}
           rows={4}
           maxLength={500}
-          placeholder="댓글을 입력하세요"
+          placeholder="해결 방법이나 의견을 댓글로 남겨주세요."
         />
         <p className="character-count">{content.length} / 500</p>
-        {errorMessage && <p className="login-error">{errorMessage}</p>}
-        <div className="comment-form-actions">
+        {errorMessage && <p className="error-text comment-form-error">{errorMessage}</p>}
+        <div className="comment-form-footer react-comment-actions">
           {editingCommentId && (
-            <button type="button" className="secondary-button" onClick={resetEditor}>
+            <button type="button" className="cancel-btn" onClick={resetEditor}>
               수정 취소
             </button>
           )}
-          <button type="submit" disabled={isSubmitting || !content.trim()}>
+          <button type="submit" id="comment-submit-btn" disabled={isSubmitting || !content.trim()}>
             {isSubmitting ? '저장 중...' : editingCommentId ? '댓글 수정' : '댓글 작성'}
           </button>
         </div>
       </form>
 
-      <div className="comment-list">
+    </section>
+
+      <section className="comments-list" aria-label="댓글 목록">
         {comments?.map((comment, index) => {
           const commentId = getCommentId(comment);
           const children = Array.isArray(comment.children) ? comment.children : [];
@@ -194,29 +206,29 @@ function CommentList({ postId, comments, onCommentAdded }) {
                 comment={comment}
                 isReply={false}
                 onEdit={startEdit}
-                onDelete={handleDelete}
+                onDelete={setPendingDeleteId}
                 onReply={startReply}
               />
 
               {replyTarget?.id === commentId && (
                 <form className="reply-composer" onSubmit={handleReplySubmit}>
-                  <label htmlFor={`reply-${commentId}`}>
+                  <label className="reply-composer-label" htmlFor={`reply-${commentId}`}>
                     ↳ {replyTarget.author}님에게 답글
                   </label>
                   <textarea
                     id={`reply-${commentId}`}
                     value={replyContent}
                     onChange={(event) => setReplyContent(event.target.value)}
-                    rows={3}
+                    className="reply-input" rows={3}
                     maxLength={500}
                     autoFocus
                   />
-                  <p className="character-count">{replyContent.length} / 500</p>
-                  <div className="comment-form-actions">
-                    <button type="button" className="secondary-button" onClick={() => setReplyTarget(null)}>
+                  <p className="reply-character-count">{replyContent.length} / 500</p>
+                  <div className="reply-composer-footer">
+                    <button type="button" className="reply-cancel-btn" onClick={() => setReplyTarget(null)}>
                       취소
                     </button>
-                    <button type="submit" disabled={isSubmitting || !replyContent.trim()}>
+                    <button type="submit" className="reply-submit-btn" disabled={isSubmitting || !replyContent.trim()}>
                       {isSubmitting ? '등록 중...' : '답글 등록'}
                     </button>
                   </div>
@@ -231,7 +243,7 @@ function CommentList({ postId, comments, onCommentAdded }) {
                       comment={child}
                       isReply
                       onEdit={startEdit}
-                      onDelete={handleDelete}
+                      onDelete={setPendingDeleteId}
                       onReply={startReply}
                     />
                   ))}
@@ -240,8 +252,14 @@ function CommentList({ postId, comments, onCommentAdded }) {
             </div>
           );
         })}
+      </section>
+      <div className={`modal-overlay${pendingDeleteId ? ' is-open' : ''}`} aria-hidden={!pendingDeleteId} onMouseDown={(event) => { if (event.target === event.currentTarget) setPendingDeleteId(null); }}>
+        <div className="confirm-modal" role="dialog" aria-modal="true" aria-labelledby="delete-comment-title">
+          <h2 id="delete-comment-title">댓글을 삭제하시겠습니까?</h2><p>삭제한 내용은 복구 할 수 없습니다.</p>
+          <div className="modal-actions"><button type="button" className="cancel-btn" onClick={() => setPendingDeleteId(null)}>취소</button><button type="button" className="confirm-btn" onClick={handleDelete} disabled={isDeletingComment}>{isDeletingComment ? '삭제 중...' : '확인'}</button></div>
+        </div>
       </div>
-    </section>
+    </>
   );
 }
 

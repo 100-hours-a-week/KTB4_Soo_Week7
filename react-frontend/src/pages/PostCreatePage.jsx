@@ -1,8 +1,12 @@
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { apiRequest } from '../services/apiClient';
+import AppHeader from '../components/AppHeader';
+import { usePageStyles } from '../hooks/usePageStyles';
+import pageStyles from '../../../pages/post-create/post-create.css?inline';
 
 function PostCreatePage() {
+  usePageStyles('post-create', pageStyles);
   const navigate = useNavigate();
   const [form, setForm] = useState({ title: '', content: '' });
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -52,33 +56,28 @@ function PostCreatePage() {
   };
 
   return (
-    <main className="app-shell">
-      <form className="login-form" onSubmit={handleSubmit}>
-        <h1>새 게시글 작성</h1>
-
-        <label>
-          제목
-          <input name="title" value={form.title} onChange={handleChange} maxLength={26} />
-        </label>
-
-        <label>
-          내용
-          <textarea
-            name="content"
-            value={form.content}
-            onChange={handleChange}
-            rows={8}
-          />
-        </label>
-
-        {errorMessage && <p className="login-error">{errorMessage}</p>}
-
-        <button type="submit" disabled={isSubmitting}>
-          {isSubmitting ? '작성 중...' : '게시글 작성'}
-        </button>
-        <Link to="/posts" className="form-link">취소</Link>
-      </form>
-    </main>
+    <>
+      <AppHeader backTo="/posts" backLabel="게시글 목록으로 이동" />
+      <main className="post-create-container">
+        <h2>버그 등록</h2>
+        <form id="post-create-form" onSubmit={handleSubmit}>
+          <div className="form-group title-group">
+            <label htmlFor="title-input">제목*</label>
+            <input id="title-input" name="title" value={form.title} onChange={handleChange} maxLength={26} placeholder="발견한 버그를 한 문장으로 적어주세요. (최대 26자)" />
+          </div>
+          <div className="form-group content-group">
+            <label htmlFor="content-input">내용*</label>
+            <textarea id="content-input" name="content" value={form.content} onChange={handleChange} placeholder="어디서 발견했고, 어떤 현상이 발생했나요?" />
+            <p className="error-text">{errorMessage}</p>
+          </div>
+          <div className="image-group">
+            <label htmlFor="image-input">에러 화면</label>
+            <div className="file-row"><input type="file" id="image-input" accept="image/*" /></div>
+          </div>
+          <button type="submit" id="post-submit-btn" disabled={isSubmitting}>{isSubmitting ? '등록 중...' : '도감에 등록'}</button>
+        </form>
+      </main>
+    </>
   );
 }
 

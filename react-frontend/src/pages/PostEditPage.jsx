@@ -1,8 +1,12 @@
 import { useEffect, useState } from 'react';
-import { Link, useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { apiRequest } from '../services/apiClient';
+import AppHeader from '../components/AppHeader';
+import { usePageStyles } from '../hooks/usePageStyles';
+import pageStyles from '../../../pages/post-edit/post-edit.css?inline';
 
 function PostEditPage() {
+  usePageStyles('post-edit', pageStyles);
   const { postId } = useParams();
   const navigate = useNavigate();
   const [form, setForm] = useState({ title: '', content: '' });
@@ -77,36 +81,25 @@ function PostEditPage() {
   }
 
   return (
-    <form className="login-form" onSubmit={handleSubmit}>
-      <h1>게시글 수정</h1>
-
-      <label>
-        제목
-        <input
-          name="title"
-          value={form.title}
-          onChange={handleChange}
-          maxLength={26}
-        />
-      </label>
-
-      <label>
-        내용
-        <textarea
-          name="content"
-          value={form.content}
-          onChange={handleChange}
-          rows={8}
-        />
-      </label>
-
-      {errorMessage && <p className="login-error">{errorMessage}</p>}
-
-      <button type="submit" disabled={isSubmitting}>
-        {isSubmitting ? '수정 중...' : '수정 완료'}
-      </button>
-      <Link to={`/posts/${postId}`} className="form-link">취소</Link>
-    </form>
+    <>
+      <AppHeader backTo={`/posts/${postId}`} backLabel="게시글 상세로 이동" />
+      <main className="post-edit-container">
+        <h2>기록 수정</h2>
+        <form id="post-edit-form" onSubmit={handleSubmit}>
+          <div className="form-group title-group">
+            <label htmlFor="title-input">제목*</label>
+            <input id="title-input" name="title" value={form.title} onChange={handleChange} maxLength={26} placeholder="제목을 입력해주세요. (최대 26글자)" />
+          </div>
+          <div className="form-group content-group">
+            <label htmlFor="content-input">내용*</label>
+            <textarea id="content-input" name="content" value={form.content} onChange={handleChange} placeholder="내용을 입력해주세요." />
+            <p className="error-text">{errorMessage}</p>
+          </div>
+          <div className="image-group"><label htmlFor="image-input">에러 화면</label><div className="file-row"><input type="file" id="image-input" accept="image/*" /><span className="current-image-name">기존 파일 명</span></div></div>
+          <button type="submit" id="post-submit-btn" disabled={isSubmitting}>{isSubmitting ? '수정 중...' : '기록 수정하기'}</button>
+        </form>
+      </main>
+    </>
   );
 }
 

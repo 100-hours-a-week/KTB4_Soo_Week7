@@ -2,8 +2,12 @@ import { useState } from 'react';
 import { Link, Navigate, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { login } from '../services/authService';
+import AppHeader from './AppHeader';
+import { usePageStyles } from '../hooks/usePageStyles';
+import pageStyles from '../../../pages/login/login.css?inline';
 
 function LoginForm() {
+  usePageStyles('login', pageStyles);
   const { completeLogin, isLoggedIn } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
@@ -40,35 +44,28 @@ function LoginForm() {
   }
 
   return (
-    <form className="login-form" onSubmit={handleSubmit}>
-      <h1>로그인</h1>
-      <label>
-        이메일
-        <input
-          type="email"
-          value={email}
-          onChange={(event) => setEmail(event.target.value)}
-          placeholder="이메일을 입력하세요"
-        />
-      </label>
-      <label>
-        비밀번호
-        <input
-          type="password"
-          value={password}
-          onChange={(event) => setPassword(event.target.value)}
-          placeholder="비밀번호를 입력하세요"
-        />
-      </label>
-      {errorMessage && <p className="login-error">{errorMessage}</p>}
-      <button type="submit" disabled={isSubmitting}>
-        {isSubmitting ? '로그인 중...' : '로그인'}
-      </button>
-      <p className="form-link">
-        계정이 없으신가요?{' '}
-        <Link to="/signup">회원가입</Link>
-      </p>
-    </form>
+    <>
+      <AppHeader showProfile={false} />
+      <main className="login-container">
+        <h2>디버거 로그인</h2>
+        <form id="login-form" onSubmit={handleSubmit}>
+          <div className="input-group">
+            <label htmlFor="email-input">이메일</label>
+            <input id="email-input" type="email" value={email} onChange={(event) => setEmail(event.target.value)} placeholder="이메일을 입력하세요" />
+            <p className="error-text">{errorMessage}</p>
+          </div>
+          <div className="input-group">
+            <label htmlFor="password-input">비밀번호</label>
+            <input id="password-input" type="password" value={password} onChange={(event) => setPassword(event.target.value)} placeholder="비밀번호를 입력하세요" />
+            <p className="error-text" />
+          </div>
+          <button type="submit" id="login-submit-btn" disabled={isSubmitting}>
+            {isSubmitting ? '도감 여는 중...' : '도감 열기'}
+          </button>
+        </form>
+        <div className="signup-link-wrap"><Link to="/signup">새 디버거 등록</Link></div>
+      </main>
+    </>
   );
 }
 

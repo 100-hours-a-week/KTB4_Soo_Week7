@@ -1,10 +1,26 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { useAuth } from '../hooks/useAuth';
 import { apiRequest } from '../services/apiClient';
+import AppHeader from '../components/AppHeader';
+import { usePageStyles } from '../hooks/usePageStyles';
+import pageStyles from '../../../pages/posts/posts.css?inline';
+
+function formatDateTime(value) {
+  if (!value) return '-';
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return value;
+
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  const hours = String(date.getHours()).padStart(2, '0');
+  const minutes = String(date.getMinutes()).padStart(2, '0');
+  const seconds = String(date.getSeconds()).padStart(2, '0');
+  return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+}
 
 function PostsPage() {
-  const { logout } = useAuth();
+  usePageStyles('posts', pageStyles);
   const [posts, setPosts] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState('');
@@ -30,26 +46,22 @@ function PostsPage() {
   }, []);
 
   return (
-    <main className="posts-page">
-      <header className="posts-header">
-        <div className="posts-header-top">
-          <div>
-            <h1>버그 게시판</h1>
-            <p>등록된 게시글을 확인해보세요.</p>
+    <>
+      <AppHeader />
+      <main className="posts-container">
+        <section className="posts-hero">
+          <div className="posts-hero-text">
+            <p className="posts-welcome">BUG SIGHTINGS ARCHIVE</p>
+            <p className="posts-desc">개발 중 마주친 버그를<br />수집하고 공유합니다.</p>
           </div>
-          <Link to="/posts/new" className="create-post-button">
-            글쓰기
-          </Link>
-          <Link to="/users/me" className="secondary-button">회원 정보</Link>
-          <button type="button" className="text-button" onClick={logout}>로그아웃</button>
-        </div>
-      </header>
+          <Link to="/posts/new" className="create-post-btn">+ 버그 등록</Link>
+        </section>
 
       {isLoading && <p className="posts-status">불러오는 중...</p>}
       {errorMessage && <p className="posts-error">{errorMessage}</p>}
 
       {!isLoading && !errorMessage && posts.length === 0 && (
-        <p className="posts-empty">아직 등록된 게시글이 없습니다.</p>
+        <article className="posts-empty">아직 등록된 버그가 없습니다.</article>
       )}
 
       <section className="posts-list">
@@ -58,14 +70,27 @@ function PostsPage() {
           return (
             <article key={postId} className="post-card">
               <Link to={`/posts/${postId}`} className="post-link">
-                <h2>{post.title || '제목 없음'}</h2>
-                <p>{post.content || '내용이 없습니다.'}</p>
+                <div className="post-card-content">
+                  <h2 className="post-card-title">{post.title || '제목 없음'}</h2>
+                  <div className="post-card-meta-row">
+                    <div className="post-card-stats">
+                      <span>같은 문제 {Number(post.likeCount ?? post.likes) || 0}</span>
+                      <span>댓글 {Number(post.commentCount ?? post.comments) || 0}</span>
+                      <span>조회 {Number(post.viewCount ?? post.views) || 0}</span>
+                    </div>
+                    <time className="post-card-date">{formatDateTime(post.updatedAt || post.createdAt || post.updatedDate || post.createdDate || post.updated_at || post.created_at)}</time>
+                  </div>
+                  <div className="post-card-footer">
+                    <div className="author-info"><span className="author-avatar" aria-hidden="true" /><span className="author-name">{post.author || post.writer || post.nickname || '미등록 작성자'}</span></div>
+                  </div>
+                </div>
               </Link>
             </article>
           );
         })}
       </section>
-    </main>
+      </main>
+    </>
   );
 }
 

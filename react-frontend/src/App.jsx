@@ -12,7 +12,7 @@ import './App.css';
 
 function App() {
   return (
-    <main className="app-shell">
+    <>
       <Routes>
         <Route path="/login" element={<LoginForm />} />
         <Route path="/signup" element={<SignupPage />} />
@@ -25,7 +25,7 @@ function App() {
         <Route path="/users/me/password" element={<ProtectedRoute><PasswordEditPage /></ProtectedRoute>} />
         <Route path="*" element={<Navigate to="/posts" replace />} />
       </Routes>
-    </main>
+    </>
   );
 }
 

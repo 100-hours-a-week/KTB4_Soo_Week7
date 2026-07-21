@@ -1,8 +1,11 @@
 import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
 import { apiRequest } from '../services/apiClient';
+import AppHeader from '../components/AppHeader';
+import { usePageStyles } from '../hooks/usePageStyles';
+import pageStyles from '../../../pages/profile-edit/profile-edit.css?inline';
 
 function ProfileEditPage() {
+  usePageStyles('profile-edit', pageStyles);
   const [email, setEmail] = useState('');
   const [nickname, setNickname] = useState('');
   const [isLoading, setIsLoading] = useState(true);
@@ -65,28 +68,24 @@ function ProfileEditPage() {
   if (isLoading) return <p className="posts-status">불러오는 중...</p>;
 
   return (
-    <form className="login-form" onSubmit={handleSubmit}>
-      <h1>회원 정보 수정</h1>
-      <label>
-        이메일
-        <input value={email} readOnly disabled />
-      </label>
-      <label>
-        닉네임
-        <input
-          value={nickname}
-          onChange={(event) => setNickname(event.target.value)}
-          maxLength={10}
-        />
-      </label>
-      {errorMessage && <p className="login-error">{errorMessage}</p>}
-      {successMessage && <p className="success-message">{successMessage}</p>}
-      <button type="submit" disabled={isSubmitting}>
-        {isSubmitting ? '수정 중...' : '수정하기'}
-      </button>
-      <Link to="/users/me/password" className="form-link">비밀번호 변경</Link>
-      <Link to="/posts" className="form-link">게시글 목록으로</Link>
-    </form>
+    <>
+      <AppHeader />
+      <main className="edit-profile-container">
+        <h2>디버거 프로필</h2>
+        <section className="profile-image-section">
+          <div className="profile-image-label">프로필 사진*</div>
+          <button type="button" className="profile-image-button" aria-label="프로필 사진 변경"><span className="profile-placeholder" /><span className="profile-change-text">변경</span></button>
+        </section>
+        <form id="profile-edit-form" onSubmit={handleSubmit}>
+          <div className="form-panel">
+            <div className="field-group"><div className="field-label">이메일</div><p className="email-text">{email}</p></div>
+            <div className="field-group"><label htmlFor="nickname-input">닉네임</label><input id="nickname-input" value={nickname} onChange={(event) => setNickname(event.target.value)} maxLength={10} /><p className="error-text">{errorMessage}</p></div>
+          </div>
+          <button type="submit" id="edit-submit-btn" disabled={isSubmitting}>{isSubmitting ? '수정 중...' : '수정하기'}</button>
+        </form>
+        {successMessage && <div className="toast-message is-visible">수정완료</div>}
+      </main>
+    </>
   );
 }
 
