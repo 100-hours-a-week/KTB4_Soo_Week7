@@ -40,6 +40,7 @@ function PostsPage() {
           <Link to="/posts/new" className="create-post-button">
             글쓰기
           </Link>
+          <Link to="/users/me" className="secondary-button">회원 정보</Link>
           <button type="button" className="text-button" onClick={logout}>로그아웃</button>
         </div>
       </header>

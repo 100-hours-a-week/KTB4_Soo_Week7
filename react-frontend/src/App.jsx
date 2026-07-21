@@ -6,6 +6,8 @@ import PostDetailPage from './pages/PostDetailPage';
 import PostCreatePage from './pages/PostCreatePage';
 import PostEditPage from './pages/PostEditPage';
 import SignupPage from './pages/SignupPage';
+import ProfileEditPage from './pages/ProfileEditPage';
+import PasswordEditPage from './pages/PasswordEditPage';
 import './App.css';
 
 function App() {
@@ -19,6 +21,8 @@ function App() {
         <Route path="/posts/new" element={<ProtectedRoute><PostCreatePage /></ProtectedRoute>} />
         <Route path="/posts/:postId" element={<ProtectedRoute><PostDetailPage /></ProtectedRoute>} />
         <Route path="/posts/:postId/edit" element={<ProtectedRoute><PostEditPage /></ProtectedRoute>} />
+        <Route path="/users/me" element={<ProtectedRoute><ProfileEditPage /></ProtectedRoute>} />
+        <Route path="/users/me/password" element={<ProtectedRoute><PasswordEditPage /></ProtectedRoute>} />
         <Route path="*" element={<Navigate to="/posts" replace />} />
       </Routes>
     </main>

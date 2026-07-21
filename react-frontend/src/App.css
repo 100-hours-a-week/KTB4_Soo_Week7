@@ -67,6 +67,12 @@
   font-size: 14px;
 }
 
+.success-message {
+  margin: 0;
+  color: #15803d;
+  font-size: 14px;
+}
+
 .form-link {
   margin: 0;
   text-align: center;
