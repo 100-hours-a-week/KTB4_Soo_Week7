@@ -8,7 +8,7 @@ function PostDetailPage({ postId }) {
   useEffect(() => {
     async function loadPost() {
       try {
-        const response = await fetch(`http://${window.location.hostname}:8080/api/v1/posts/${postId}`, {
+        const response = await fetch(`/api/v1/posts/${postId}`, {
           method: 'GET',
           headers: {
             Authorization: `Bearer ${localStorage.getItem('accessToken') || ''}`,

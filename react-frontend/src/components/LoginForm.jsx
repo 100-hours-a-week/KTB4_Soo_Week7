@@ -55,6 +55,10 @@ function LoginForm() {
       <button type="submit" disabled={isSubmitting}>
         {isSubmitting ? '로그인 중...' : '로그인'}
       </button>
+      <p className="form-link">
+        계정이 없으신가요?{' '}
+        <a href="/?view=signup">회원가입</a>
+      </p>
     </form>
   );
 }

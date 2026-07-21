@@ -8,7 +8,7 @@ function PostsPage() {
   useEffect(() => {
     async function loadPosts() {
       try {
-        const response = await fetch(`http://${window.location.hostname}:8080/api/v1/posts`, {
+        const response = await fetch('/api/v1/posts', {
           method: 'GET',
           headers: {
             Authorization: `Bearer ${localStorage.getItem('accessToken') || ''}`,

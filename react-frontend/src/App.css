@@ -61,6 +61,18 @@
   font-size: 14px;
 }
 
+.form-link {
+  margin: 0;
+  text-align: center;
+  color: #6b7280;
+}
+
+.form-link a {
+  color: #7c3aed;
+  font-weight: 600;
+  text-decoration: none;
+}
+
 .posts-page {
   width: 100%;
   max-width: 840px;

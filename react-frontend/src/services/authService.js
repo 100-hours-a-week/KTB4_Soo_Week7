@@ -2,7 +2,7 @@ const ACCESS_TOKEN_KEY = 'accessToken';
 const REFRESH_TOKEN_KEY = 'refreshToken';
 
 function getApiBaseUrl() {
-  return `http://${window.location.hostname}:8080`;
+  return '/api';
 }
 
 function saveTokens(tokenResponse) {
