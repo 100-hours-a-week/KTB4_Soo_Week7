@@ -1,5 +1,6 @@
-import { useMemo } from 'react';
+import { Navigate, Route, Routes } from 'react-router-dom';
 import LoginForm from './components/LoginForm';
+import ProtectedRoute from './components/ProtectedRoute';
 import PostsPage from './pages/PostsPage';
 import PostDetailPage from './pages/PostDetailPage';
 import PostCreatePage from './pages/PostCreatePage';
@@ -7,30 +8,17 @@ import SignupPage from './pages/SignupPage';
 import './App.css';
 
 function App() {
-  const isLoggedIn = Boolean(localStorage.getItem('accessToken'));
-  const searchParams = useMemo(() => new URLSearchParams(window.location.search), []);
-  const postId = searchParams.get('postId');
-  const view = searchParams.get('view');
-
-  const handlePostCreated = (createdPostId) => {
-    const nextUrl = new URL(window.location.href);
-    nextUrl.searchParams.set('postId', createdPostId);
-    nextUrl.searchParams.delete('view');
-    window.history.pushState({}, '', nextUrl.toString());
-    window.location.reload();
-  };
-
   return (
     <main className="app-shell">
-      {!isLoggedIn ? (
-        view === 'signup' ? <SignupPage /> : <LoginForm />
-      ) : postId ? (
-        <PostDetailPage postId={postId} />
-      ) : view === 'create' ? (
-        <PostCreatePage onCreated={handlePostCreated} />
-      ) : (
-        <PostsPage />
-      )}
+      <Routes>
+        <Route path="/login" element={<LoginForm />} />
+        <Route path="/signup" element={<SignupPage />} />
+        <Route path="/" element={<Navigate to="/posts" replace />} />
+        <Route path="/posts" element={<ProtectedRoute><PostsPage /></ProtectedRoute>} />
+        <Route path="/posts/new" element={<ProtectedRoute><PostCreatePage /></ProtectedRoute>} />
+        <Route path="/posts/:postId" element={<ProtectedRoute><PostDetailPage /></ProtectedRoute>} />
+        <Route path="*" element={<Navigate to="/posts" replace />} />
+      </Routes>
     </main>
   );
 }

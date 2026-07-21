@@ -1,7 +1,12 @@
 import { useState } from 'react';
+import { Link, Navigate, useLocation, useNavigate } from 'react-router-dom';
+import { useAuth } from '../hooks/useAuth';
 import { login } from '../services/authService';
 
 function LoginForm() {
+  const { completeLogin, isLoggedIn } = useAuth();
+  const navigate = useNavigate();
+  const location = useLocation();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -19,9 +24,9 @@ function LoginForm() {
     setIsSubmitting(true);
 
     try {
-      await login({ email: email.trim(), password });
-      window.alert('로그인에 성공했습니다!');
-      window.location.href = '/posts';
+      const tokenPayload = await login({ email: email.trim(), password });
+      completeLogin(tokenPayload, email.trim());
+      navigate(location.state?.from?.pathname || '/posts', { replace: true });
     } catch (error) {
       const message = error?.message || '로그인에 실패했습니다.';
       setErrorMessage(message);
@@ -29,6 +34,10 @@ function LoginForm() {
       setIsSubmitting(false);
     }
   };
+
+  if (isLoggedIn) {
+    return <Navigate to="/posts" replace />;
+  }
 
   return (
     <form className="login-form" onSubmit={handleSubmit}>
@@ -57,7 +66,7 @@ function LoginForm() {
       </button>
       <p className="form-link">
         계정이 없으신가요?{' '}
-        <a href="/?view=signup">회원가입</a>
+        <Link to="/signup">회원가입</Link>
       </p>
     </form>
   );

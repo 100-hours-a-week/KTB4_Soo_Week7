@@ -1,6 +1,9 @@
 import { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { apiRequest } from '../services/apiClient';
 
-function PostCreatePage({ onCreated }) {
+function PostCreatePage() {
+  const navigate = useNavigate();
   const [form, setForm] = useState({ title: '', content: '' });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
@@ -30,30 +33,16 @@ function PostCreatePage({ onCreated }) {
     setIsSubmitting(true);
 
     try {
-      const response = await fetch('/api/v1/posts', {
+      const parsedBody = await apiRequest('/api/v1/posts', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${localStorage.getItem('accessToken') || ''}`,
-        },
         body: JSON.stringify({ title, content }),
       });
 
-      const text = await response.text();
-      const parsedBody = text ? JSON.parse(text) : null;
-
-      if (!response.ok) {
-        throw new Error(parsedBody?.message || '게시글 작성에 실패했습니다.');
-      }
-
       const createdPostId = parsedBody?.data;
       if (createdPostId) {
-        if (onCreated) {
-          onCreated(createdPostId);
-        }
+        navigate(`/posts/${createdPostId}`, { replace: true });
       } else {
-        window.alert('게시글이 작성되었습니다.');
-        window.location.href = '/';
+        navigate('/posts', { replace: true });
       }
     } catch (error) {
       setErrorMessage(error.message || '게시글 작성에 실패했습니다.');
@@ -87,6 +76,7 @@ function PostCreatePage({ onCreated }) {
         <button type="submit" disabled={isSubmitting}>
           {isSubmitting ? '작성 중...' : '게시글 작성'}
         </button>
+        <Link to="/posts" className="form-link">취소</Link>
       </form>
     </main>
   );

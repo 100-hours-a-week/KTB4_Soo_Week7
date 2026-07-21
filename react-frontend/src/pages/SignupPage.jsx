@@ -1,6 +1,9 @@
 import { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { apiRequest } from '../services/apiClient';
 
 function SignupPage() {
+  const navigate = useNavigate();
   const [form, setForm] = useState({
     email: '',
     nickname: '',
@@ -26,26 +29,17 @@ function SignupPage() {
     setIsSubmitting(true);
 
     try {
-      const response = await fetch('/api/v1/auth/signup', {
+      await apiRequest('/api/v1/auth/signup', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
         body: JSON.stringify({
           email: form.email,
           nickname: form.nickname,
           password: form.password,
         }),
+        auth: false,
       });
 
-      const text = await response.text();
-      const parsedBody = text ? JSON.parse(text) : null;
-
-      if (!response.ok) {
-        throw new Error(parsedBody?.message || '회원가입에 실패했습니다.');
-      }
-
-      setMessage('회원가입에 성공했습니다.');
+      navigate('/login', { replace: true, state: { signupComplete: true } });
     } catch (error) {
       setMessage(error.message || '회원가입에 실패했습니다.');
     } finally {
@@ -78,6 +72,9 @@ function SignupPage() {
         <button type="submit" disabled={isSubmitting}>
           {isSubmitting ? '처리 중...' : '회원가입'}
         </button>
+        <p className="form-link">
+          이미 계정이 있나요? <Link to="/login">로그인</Link>
+        </p>
       </form>
     </main>
   );

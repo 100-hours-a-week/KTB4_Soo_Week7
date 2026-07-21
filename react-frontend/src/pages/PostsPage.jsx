@@ -1,6 +1,10 @@
 import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
+import { useAuth } from '../hooks/useAuth';
+import { apiRequest } from '../services/apiClient';
 
 function PostsPage() {
+  const { logout } = useAuth();
   const [posts, setPosts] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState('');
@@ -8,19 +12,7 @@ function PostsPage() {
   useEffect(() => {
     async function loadPosts() {
       try {
-        const response = await fetch('/api/v1/posts', {
-          method: 'GET',
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem('accessToken') || ''}`,
-          },
-        });
-
-        const text = await response.text();
-        const parsedBody = text ? JSON.parse(text) : null;
-
-        if (!response.ok) {
-          throw new Error(parsedBody?.message || '게시글 목록을 불러오지 못했습니다.');
-        }
+        const parsedBody = await apiRequest('/api/v1/posts');
 
         const items = Array.isArray(parsedBody?.data)
           ? parsedBody.data
@@ -45,9 +37,10 @@ function PostsPage() {
             <h1>버그 게시판</h1>
             <p>등록된 게시글을 확인해보세요.</p>
           </div>
-          <a href="/?view=create" className="create-post-button">
+          <Link to="/posts/new" className="create-post-button">
             글쓰기
-          </a>
+          </Link>
+          <button type="button" className="text-button" onClick={logout}>로그아웃</button>
         </div>
       </header>
 
@@ -59,12 +52,17 @@ function PostsPage() {
       )}
 
       <section className="posts-list">
-        {posts.map((post) => (
-          <article key={post.id ?? post.postId} className="post-card">
-            <h2>{post.title || '제목 없음'}</h2>
-            <p>{post.content || '내용이 없습니다.'}</p>
-          </article>
-        ))}
+        {posts.map((post) => {
+          const postId = post.id ?? post.postId;
+          return (
+            <article key={postId} className="post-card">
+              <Link to={`/posts/${postId}`} className="post-link">
+                <h2>{post.title || '제목 없음'}</h2>
+                <p>{post.content || '내용이 없습니다.'}</p>
+              </Link>
+            </article>
+          );
+        })}
       </section>
     </main>
   );
