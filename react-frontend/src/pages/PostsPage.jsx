@@ -40,8 +40,15 @@ function PostsPage() {
   return (
     <main className="posts-page">
       <header className="posts-header">
-        <h1>버그 게시판</h1>
-        <p>등록된 게시글을 확인해보세요.</p>
+        <div className="posts-header-top">
+          <div>
+            <h1>버그 게시판</h1>
+            <p>등록된 게시글을 확인해보세요.</p>
+          </div>
+          <a href="/?view=create" className="create-post-button">
+            글쓰기
+          </a>
+        </div>
       </header>
 
       {isLoading && <p className="posts-status">불러오는 중...</p>}

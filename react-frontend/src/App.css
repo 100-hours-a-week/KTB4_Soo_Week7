@@ -32,11 +32,17 @@
   color: #3f3f46;
 }
 
-.login-form input {
+.login-form input,
+.login-form textarea {
   padding: 12px 14px;
   border: 1px solid #d4d4d8;
   border-radius: 10px;
   font-size: 16px;
+  font-family: inherit;
+}
+
+.login-form textarea {
+  resize: vertical;
 }
 
 .login-form button {
@@ -81,6 +87,25 @@
 
 .posts-header {
   margin-bottom: 20px;
+}
+
+.posts-header-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.create-post-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 16px;
+  border-radius: 999px;
+  background: #7c3aed;
+  color: white;
+  text-decoration: none;
+  font-weight: 600;
 }
 
 .posts-list {
