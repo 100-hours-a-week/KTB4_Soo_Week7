@@ -6,14 +6,22 @@ function getApiBaseUrl() {
 }
 
 function saveTokens(tokenResponse) {
-  if (!tokenResponse?.accessToken) {
+  const normalized = tokenResponse?.accessToken
+    ? tokenResponse
+    : tokenResponse?.data?.accessToken
+      ? tokenResponse.data
+      : tokenResponse?.data
+        ? tokenResponse.data
+        : null;
+
+  if (!normalized?.accessToken) {
     throw new Error('로그인 응답에 accessToken이 없습니다.');
   }
 
-  localStorage.setItem(ACCESS_TOKEN_KEY, tokenResponse.accessToken);
+  localStorage.setItem(ACCESS_TOKEN_KEY, normalized.accessToken);
 
-  if (tokenResponse.refreshToken) {
-    localStorage.setItem(REFRESH_TOKEN_KEY, tokenResponse.refreshToken);
+  if (normalized.refreshToken) {
+    localStorage.setItem(REFRESH_TOKEN_KEY, normalized.refreshToken);
   }
 }
 
@@ -35,8 +43,12 @@ export async function login({ email, password }) {
     throw { code: errorCode, message: errorMessage };
   }
 
-  saveTokens(parsedBody?.data);
+  const tokenPayload = parsedBody?.data ?? parsedBody;
+  console.log('login response body', parsedBody);
+  console.log('token payload', tokenPayload);
+  saveTokens(tokenPayload);
   localStorage.setItem('loginUserEmail', email);
+  console.log('saved access token', localStorage.getItem('accessToken'));
 
-  return parsedBody?.data;
+  return tokenPayload;
 }
