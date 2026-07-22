@@ -23,7 +23,9 @@ function formatDateTime(value) {
 function countComments(items) {
   return items.reduce((total, comment) => {
     const children = Array.isArray(comment.children) ? comment.children : [];
-    return total + 1 + countComments(children);
+    const commentId = comment.id ?? comment.commentId;
+    const currentCommentCount = commentId == null ? 0 : 1;
+    return total + currentCommentCount + countComments(children);
   }, 0);
 }
 

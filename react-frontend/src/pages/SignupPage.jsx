@@ -1,7 +1,9 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { apiRequest } from '../services/apiClient';
+import { login } from '../services/authService';
 import AppHeader from '../components/AppHeader';
+import { useAuth } from '../hooks/useAuth';
 import { usePageStyles } from '../hooks/usePageStyles';
 import pageStyles from '../../../pages/signup/signup.css?inline';
 
@@ -11,6 +13,8 @@ const PASSWORD_PATTERN = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\
 function SignupPage() {
   usePageStyles('signup', pageStyles);
   const navigate = useNavigate();
+  const { completeLogin } = useAuth();
+  const profileInputRef = useRef(null);
   const [form, setForm] = useState({
     email: '',
     nickname: '',
@@ -48,6 +52,7 @@ function SignupPage() {
     }
 
     setIsSubmitting(true);
+    let signupCompleted = false;
 
     try {
       await apiRequest('/api/v1/auth/signup', {
@@ -59,9 +64,23 @@ function SignupPage() {
         }),
         auth: false,
       });
+      signupCompleted = true;
 
-      navigate('/login', { replace: true, state: { signupComplete: true } });
+      localStorage.setItem('loginUserEmail', form.email.trim());
+      localStorage.setItem('loginUserNickname', form.nickname.trim());
+      const tokenPayload = await login({
+        email: form.email.trim(),
+        password: form.password,
+      });
+      completeLogin(tokenPayload, form.email.trim());
+      window.alert('회원가입에 성공했습니다!');
+      navigate('/posts', { replace: true });
     } catch (error) {
+      if (signupCompleted) {
+        window.alert('회원가입은 완료됐지만 자동 로그인에 실패했습니다. 로그인해주세요.');
+        navigate('/login', { replace: true });
+        return;
+      }
       setMessage(error.message || '회원가입에 실패했습니다.');
     } finally {
       setIsSubmitting(false);
@@ -76,13 +95,13 @@ function SignupPage() {
         <section className="profile-section">
           <div className="profile-label">프로필 사진</div>
           <p className="error-text" />
-          <label className="profile-upload-button" aria-label="프로필 사진 추가">
+          <button type="button" className="profile-upload-button" aria-label="프로필 사진 추가" onClick={() => profileInputRef.current?.click()}>
             {profilePreview ? <img src={profilePreview} alt="선택한 프로필" /> : <span aria-hidden="true">+</span>}
-            <input id="profile-input" type="file" accept="image/*" onChange={(event) => {
-              const file = event.target.files?.[0];
-              if (file) setProfilePreview(URL.createObjectURL(file));
-            }} />
-          </label>
+          </button>
+          <input ref={profileInputRef} id="profile-input" type="file" accept="image/*" onChange={(event) => {
+            const file = event.target.files?.[0];
+            if (file) setProfilePreview(URL.createObjectURL(file));
+          }} />
         </section>
         <form id="signup-form" onSubmit={handleSubmit}>
           {[

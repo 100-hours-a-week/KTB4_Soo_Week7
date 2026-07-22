@@ -30,6 +30,7 @@ function LoginForm() {
     try {
       const tokenPayload = await login({ email: email.trim(), password });
       completeLogin(tokenPayload, email.trim());
+      window.alert('로그인에 성공했습니다!');
       navigate(location.state?.from?.pathname || '/posts', { replace: true });
     } catch (error) {
       const message = error?.message || '로그인에 실패했습니다.';

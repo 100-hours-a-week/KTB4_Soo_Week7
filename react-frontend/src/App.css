@@ -95,6 +95,30 @@
   height: 32px !important;
 }
 
+.profile-upload-button {
+  display: grid !important;
+  place-items: center !important;
+  padding: 0 !important;
+  cursor: pointer;
+}
+
+.profile-upload-button > span {
+  position: static !important;
+  display: block !important;
+  color: var(--ink) !important;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 34px !important;
+  font-weight: 600;
+  line-height: 1 !important;
+}
+
+.profile-upload-button > img {
+  display: block;
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover;
+}
+
 .post-card .post-link {
   display: block;
 }

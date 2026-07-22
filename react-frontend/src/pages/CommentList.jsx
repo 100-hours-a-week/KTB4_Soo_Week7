@@ -68,6 +68,10 @@ function CommentList({ postId, comments, onCommentAdded }) {
   const [pendingDeleteId, setPendingDeleteId] = useState(null);
   const [isDeletingComment, setIsDeletingComment] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
+  const visibleComments = (comments ?? []).filter((comment) => {
+    const children = Array.isArray(comment.children) ? comment.children : [];
+    return getCommentId(comment) != null || children.length > 0;
+  });
 
   const refreshComments = () => {
     if (onCommentAdded) onCommentAdded();
@@ -195,8 +199,9 @@ function CommentList({ postId, comments, onCommentAdded }) {
 
     </section>
 
+      {visibleComments.length > 0 && (
       <section className="comments-list" aria-label="댓글 목록">
-        {comments?.map((comment, index) => {
+        {visibleComments.map((comment, index) => {
           const commentId = getCommentId(comment);
           const children = Array.isArray(comment.children) ? comment.children : [];
 
@@ -210,7 +215,7 @@ function CommentList({ postId, comments, onCommentAdded }) {
                 onReply={startReply}
               />
 
-              {replyTarget?.id === commentId && (
+              {replyTarget !== null && replyTarget.id === commentId && (
                 <form className="reply-composer" onSubmit={handleReplySubmit}>
                   <label className="reply-composer-label" htmlFor={`reply-${commentId}`}>
                     ↳ {replyTarget.author}님에게 답글
@@ -253,12 +258,15 @@ function CommentList({ postId, comments, onCommentAdded }) {
           );
         })}
       </section>
-      <div className={`modal-overlay${pendingDeleteId ? ' is-open' : ''}`} aria-hidden={!pendingDeleteId} onMouseDown={(event) => { if (event.target === event.currentTarget) setPendingDeleteId(null); }}>
+      )}
+      {pendingDeleteId && (
+      <div className="modal-overlay is-open" aria-hidden="false" onMouseDown={(event) => { if (event.target === event.currentTarget) setPendingDeleteId(null); }}>
         <div className="confirm-modal" role="dialog" aria-modal="true" aria-labelledby="delete-comment-title">
           <h2 id="delete-comment-title">댓글을 삭제하시겠습니까?</h2><p>삭제한 내용은 복구 할 수 없습니다.</p>
           <div className="modal-actions"><button type="button" className="cancel-btn" onClick={() => setPendingDeleteId(null)}>취소</button><button type="button" className="confirm-btn" onClick={handleDelete} disabled={isDeletingComment}>{isDeletingComment ? '삭제 중...' : '확인'}</button></div>
         </div>
       </div>
+      )}
     </>
   );
 }
