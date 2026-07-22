@@ -24,7 +24,9 @@ function AppHeader({ backTo, backLabel = '뒤로 이동', showProfile = true }) 
   return (
     <header className="main-header">
       {backTo && <Link className="back-link" to={backTo} aria-label={backLabel}>‹</Link>}
-      <div className="header-title">버그도감</div>
+      <Link className="header-title" to="/posts" aria-label="게시글 목록으로 이동">
+        버그도감
+      </Link>
       {showProfile && (
         <nav ref={menuRef} className={`profile-menu${isOpen ? ' is-open' : ''}`} aria-label="회원 메뉴">
           <button

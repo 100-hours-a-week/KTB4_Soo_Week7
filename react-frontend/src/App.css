@@ -3,6 +3,10 @@
   text-decoration: none;
 }
 
+.header-title {
+  text-decoration: none !important;
+}
+
 .posts-status,
 .posts-error {
   padding: 32px;

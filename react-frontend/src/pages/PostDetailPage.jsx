@@ -29,6 +29,19 @@ function countComments(items) {
   }, 0);
 }
 
+function isCurrentUserPostAuthor(post, currentUserNickname) {
+  const candidates = [post?.isPostAuthor, post?.postAuthor, post?.isAuthor, post?.author];
+  const serverAuthorFlag = candidates.find((value) => typeof value === 'boolean') ?? false;
+  const postNickname = String(post?.nickname ?? '').trim();
+  const loginNickname = String(currentUserNickname ?? '').trim();
+
+  return serverAuthorFlag || (
+    Boolean(postNickname)
+    && Boolean(loginNickname)
+    && postNickname === loginNickname
+  );
+}
+
 function PostDetailPage() {
   usePageStyles('post-detail', pageStyles);
   const { postId } = useParams();
@@ -44,6 +57,9 @@ function PostDetailPage() {
   const [isUpdatingLike, setIsUpdatingLike] = useState(false);
   const [actionError, setActionError] = useState('');
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [currentUserNickname, setCurrentUserNickname] = useState(
+    () => localStorage.getItem('loginUserNickname') || ''
+  );
 
   useEffect(() => {
     async function loadPost() {
@@ -55,6 +71,17 @@ function PostDetailPage() {
         setComments(detail?.comments ?? []);
         setLikeCount(Number(detail?.likeCount ?? detail?.likes) || 0);
         setIsLiked(Boolean(detail?.liked ?? detail?.isLiked));
+
+        try {
+          const profileBody = await apiRequest('/api/v1/users/me');
+          const profile = profileBody?.data ?? profileBody;
+          if (profile?.nickname) {
+            setCurrentUserNickname(profile.nickname);
+            localStorage.setItem('loginUserNickname', profile.nickname);
+          }
+        } catch {
+          // 상세 조회는 성공했으므로 프로필 조회 실패가 화면 전체를 막지 않게 한다.
+        }
       } catch (error) {
         setErrorMessage(error.message || '게시글을 불러오지 못했습니다.');
       } finally {
@@ -126,7 +153,12 @@ function PostDetailPage() {
             <h1>{post.title || '제목 없음'}</h1>
             <div className="post-meta-row">
               <div className="post-author"><span className="author-avatar" aria-hidden="true" /><strong>{post.nickname || post.author || '작성자'}</strong><time>{formatDateTime(post.updatedAt || post.createdAt)}</time></div>
-              <div className="post-actions"><button type="button" onClick={() => navigate(`/posts/${postId}/edit`)}>수정</button><button type="button" onClick={() => setIsDeleteModalOpen(true)}>삭제</button></div>
+              {isCurrentUserPostAuthor(post, currentUserNickname) && (
+                <div className="post-actions">
+                  <button type="button" onClick={() => navigate(`/posts/${postId}/edit`)}>수정</button>
+                  <button type="button" onClick={() => setIsDeleteModalOpen(true)}>삭제</button>
+                </div>
+              )}
             </div>
           </header>
           {post.image && <img className="post-image react-post-image" src={post.image} alt="게시글 이미지" />}
@@ -138,7 +170,12 @@ function PostDetailPage() {
           </section>
           {actionError && <p className="error-text">{actionError}</p>}
         </article>
-        <CommentList postId={postId} comments={comments} onCommentAdded={() => setReloadVersion((version) => version + 1)} />
+        <CommentList
+          postId={postId}
+          comments={comments}
+          currentUserNickname={currentUserNickname}
+          onCommentAdded={() => setReloadVersion((version) => version + 1)}
+        />
       </main>
       <div className={`modal-overlay${isDeleteModalOpen ? ' is-open' : ''}`} aria-hidden={!isDeleteModalOpen} onMouseDown={(event) => { if (event.target === event.currentTarget) setIsDeleteModalOpen(false); }}>
         <div className="confirm-modal" role="dialog" aria-modal="true" aria-labelledby="delete-post-title">

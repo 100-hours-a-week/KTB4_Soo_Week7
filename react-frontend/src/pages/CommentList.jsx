@@ -29,9 +29,34 @@ function getCommentDate(comment) {
   return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
 }
 
-function CommentItem({ comment, isReply, onEdit, onDelete, onReply }) {
+function isCurrentUserCommentAuthor(comment, currentUserNickname) {
+  const candidates = [
+    comment?.isAuthor,
+    comment?.authorComment,
+    comment?.isCommentAuthor,
+    comment?.commentAuthor,
+    comment?.isMine,
+    comment?.mine,
+    comment?.ownedByCurrentUser,
+    comment?.isOwnedByCurrentUser,
+    comment?.author,
+  ];
+
+  const serverAuthorFlag = candidates.find((value) => typeof value === 'boolean') ?? false;
+  const commentNickname = String(comment?.nickname ?? '').trim();
+  const loginNickname = String(currentUserNickname ?? '').trim();
+
+  return serverAuthorFlag || (
+    Boolean(commentNickname)
+    && Boolean(loginNickname)
+    && commentNickname === loginNickname
+  );
+}
+
+function CommentItem({ comment, isReply, currentUserNickname, onEdit, onDelete, onReply }) {
   const commentId = getCommentId(comment);
   const isDeleted = commentId == null;
+  const canManageComment = !isDeleted && isCurrentUserCommentAuthor(comment, currentUserNickname);
 
   return (
     <article className={`comment-item${isReply ? ' is-reply' : ''}`}>
@@ -51,15 +76,19 @@ function CommentItem({ comment, isReply, onEdit, onDelete, onReply }) {
               답글
             </button>
           )}
-          <button type="button" onClick={() => onEdit(comment)}>수정</button>
-          <button type="button" onClick={() => onDelete(commentId)}>삭제</button>
+          {canManageComment && (
+            <>
+              <button type="button" onClick={() => onEdit(comment)}>수정</button>
+              <button type="button" onClick={() => onDelete(commentId)}>삭제</button>
+            </>
+          )}
         </div>
       )}
     </article>
   );
 }
 
-function CommentList({ postId, comments, onCommentAdded }) {
+function CommentList({ postId, comments, currentUserNickname, onCommentAdded }) {
   const [content, setContent] = useState('');
   const [editingCommentId, setEditingCommentId] = useState(null);
   const [replyTarget, setReplyTarget] = useState(null);
@@ -210,6 +239,7 @@ function CommentList({ postId, comments, onCommentAdded }) {
               <CommentItem
                 comment={comment}
                 isReply={false}
+                currentUserNickname={currentUserNickname}
                 onEdit={startEdit}
                 onDelete={setPendingDeleteId}
                 onReply={startReply}
@@ -247,6 +277,7 @@ function CommentList({ postId, comments, onCommentAdded }) {
                       key={getCommentId(child) ?? `deleted-reply-${childIndex}`}
                       comment={child}
                       isReply
+                      currentUserNickname={currentUserNickname}
                       onEdit={startEdit}
                       onDelete={setPendingDeleteId}
                       onReply={startReply}
