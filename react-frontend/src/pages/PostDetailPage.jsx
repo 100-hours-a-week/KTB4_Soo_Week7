@@ -29,6 +29,13 @@ function countComments(items) {
   }, 0);
 }
 
+function getCommentCount(post, comments) {
+  if (post?.commentCount != null) {
+    return Number(post.commentCount) || 0;
+  }
+  return countComments(comments);
+}
+
 function isCurrentUserPostAuthor(post, currentUserNickname) {
   const candidates = [post?.isPostAuthor, post?.postAuthor, post?.isAuthor, post?.author];
   const serverAuthorFlag = candidates.find((value) => typeof value === 'boolean') ?? false;
@@ -122,7 +129,30 @@ function PostDetailPage() {
     setLikeCount(Math.max(0, previousCount + (nextLiked ? 1 : -1)));
 
     try {
-      await apiRequest(`/api/v1/posts/${postId}/like`, { method: 'POST' });
+      const likeBody = await apiRequest(`/api/v1/posts/${postId}/like`, { method: 'POST' });
+      const likeResult = likeBody?.data ?? likeBody;
+      const responseLikeCount = typeof likeResult === 'number'
+        ? likeResult
+        : likeResult?.likeCount ?? likeResult?.likes;
+      const responseLiked = typeof likeResult === 'object' && likeResult !== null
+        ? likeResult.isLiked ?? likeResult.liked
+        : undefined;
+
+      if (responseLikeCount != null || responseLiked != null) {
+        if (responseLikeCount != null) setLikeCount(Number(responseLikeCount) || 0);
+        if (responseLiked != null) setIsLiked(Boolean(responseLiked));
+      } else {
+        try {
+          const detailBody = await apiRequest(`/api/v1/posts/${postId}`);
+          const refreshedPost = detailBody?.data;
+          setPost(refreshedPost);
+          setComments(refreshedPost?.comments ?? []);
+          setLikeCount(Number(refreshedPost?.likeCount ?? refreshedPost?.likes) || 0);
+          setIsLiked(Boolean(refreshedPost?.isLiked ?? refreshedPost?.liked));
+        } catch {
+          // 좋아요 요청은 성공했으므로 상세 재조회만 실패하면 낙관적 상태를 유지한다.
+        }
+      }
     } catch (error) {
       setIsLiked(previousLiked);
       setLikeCount(previousCount);
@@ -166,7 +196,7 @@ function PostDetailPage() {
           <section className="post-stats" aria-label="게시글 통계">
             <button type="button" className={`stat-box${isLiked ? ' is-liked' : ''}`} onClick={handleLike} disabled={isUpdatingLike} aria-pressed={isLiked}><strong>{likeCount}</strong><span>같은 문제</span></button>
             <div className="stat-box"><strong>{Number(post.viewCount ?? post.views) || 0}</strong><span>조회</span></div>
-            <div className="stat-box"><strong>{countComments(comments)}</strong><span>댓글</span></div>
+            <div className="stat-box"><strong>{getCommentCount(post, comments)}</strong><span>댓글</span></div>
           </section>
           {actionError && <p className="error-text">{actionError}</p>}
         </article>
