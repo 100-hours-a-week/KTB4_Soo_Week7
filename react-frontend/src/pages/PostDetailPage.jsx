@@ -69,36 +69,69 @@ function PostDetailPage() {
   );
 
   useEffect(() => {
+    const controller = new AbortController();
+    let ignore = false;
+
+    async function loadCurrentUser() {
+      try {
+        const profileBody = await apiRequest('/api/v1/users/me', {
+          signal: controller.signal,
+        });
+        const profile = profileBody?.data ?? profileBody;
+
+        if (!ignore && profile?.nickname) {
+          setCurrentUserNickname(profile.nickname);
+          localStorage.setItem('loginUserNickname', profile.nickname);
+        }
+      } catch {
+        // 상세 화면은 저장된 닉네임으로 계속 표시한다.
+      }
+    }
+
+    loadCurrentUser();
+
+    return () => {
+      ignore = true;
+      controller.abort();
+    };
+  }, []);
+
+  useEffect(() => {
+    const controller = new AbortController();
+    let ignore = false;
+
     async function loadPost() {
       try {
-        const parsedBody = await apiRequest(`/api/v1/posts/${postId}`);
+        const parsedBody = await apiRequest(`/api/v1/posts/${postId}`, {
+          signal: controller.signal,
+        });
 
         const detail = parsedBody?.data;
+        if (ignore) return;
+
         setPost(detail);
         setComments(detail?.comments ?? []);
         setLikeCount(Number(detail?.likeCount ?? detail?.likes) || 0);
         setIsLiked(Boolean(detail?.liked ?? detail?.isLiked));
-
-        try {
-          const profileBody = await apiRequest('/api/v1/users/me');
-          const profile = profileBody?.data ?? profileBody;
-          if (profile?.nickname) {
-            setCurrentUserNickname(profile.nickname);
-            localStorage.setItem('loginUserNickname', profile.nickname);
-          }
-        } catch {
-          // 상세 조회는 성공했으므로 프로필 조회 실패가 화면 전체를 막지 않게 한다.
-        }
       } catch (error) {
-        setErrorMessage(error.message || '게시글을 불러오지 못했습니다.');
+        if (!ignore) {
+          setErrorMessage(error.message || '게시글을 불러오지 못했습니다.');
+        }
       } finally {
-        setIsLoading(false);
+        if (!ignore) {
+          setIsLoading(false);
+        }
       }
     }
 
     if (postId) {
       loadPost();
     }
+
+    return () => {
+      ignore = true;
+      controller.abort();
+    };
   }, [postId, reloadVersion]);
 
   const handleDelete = async () => {
