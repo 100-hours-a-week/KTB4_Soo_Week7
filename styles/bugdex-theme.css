@@ -369,6 +369,36 @@ button[type='submit']:active,
     text-align: center;
 }
 
+.edit-profile-container .react-withdraw-button {
+    width: fit-content;
+    height: auto;
+    margin: 20px auto 0 !important;
+    padding: 6px 2px;
+    align-self: center;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    color: var(--muted) !important;
+    font-family: 'Noto Sans KR', sans-serif;
+    font-size: 13px !important;
+    font-weight: 500;
+    line-height: 1.4;
+    text-decoration: underline;
+    text-decoration-color: var(--coral);
+    text-decoration-thickness: 2px;
+    text-underline-offset: 4px;
+    cursor: pointer;
+}
+
+.edit-profile-container .react-withdraw-button:hover {
+    color: var(--coral) !important;
+}
+
+.edit-profile-container .react-withdraw-button:focus-visible {
+    outline: 3px solid var(--lime);
+    outline-offset: 4px;
+}
+
 .signup-link-wrap a,
 .login-link {
     color: var(--ink) !important;

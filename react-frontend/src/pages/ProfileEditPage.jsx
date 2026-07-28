@@ -1,17 +1,22 @@
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { apiRequest } from '../services/apiClient';
 import AppHeader from '../components/AppHeader';
+import { useAuth } from '../hooks/useAuth';
 import { usePageStyles } from '../hooks/usePageStyles';
 import pageStyles from '../../../pages/profile-edit/profile-edit.css?inline';
 
 function ProfileEditPage() {
   usePageStyles('profile-edit', pageStyles);
+  const navigate = useNavigate();
+  const { logout } = useAuth();
   const [email, setEmail] = useState('');
   const [nickname, setNickname] = useState('');
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
+  const [isWithdrawModalOpen, setIsWithdrawModalOpen] = useState(false);
 
   useEffect(() => {
     async function loadProfile() {
@@ -65,6 +70,11 @@ function ProfileEditPage() {
     }
   };
 
+  const handleWithdrawConfirm = () => {
+    logout();
+    navigate('/login', { replace: true });
+  };
+
   if (isLoading) return <p className="posts-status">불러오는 중...</p>;
 
   return (
@@ -83,8 +93,24 @@ function ProfileEditPage() {
           </div>
           <button type="submit" id="edit-submit-btn" disabled={isSubmitting}>{isSubmitting ? '수정 중...' : '수정하기'}</button>
         </form>
+        <button type="button" className="withdraw-button react-withdraw-button" onClick={() => setIsWithdrawModalOpen(true)}>회원 탈퇴</button>
         {successMessage && <div className="toast-message is-visible">수정완료</div>}
       </main>
+      <div
+        className={`modal-overlay${isWithdrawModalOpen ? ' is-visible' : ''}`}
+        aria-hidden={!isWithdrawModalOpen}
+        onMouseDown={(event) => {
+          if (event.target === event.currentTarget) setIsWithdrawModalOpen(false);
+        }}
+      >
+        <section className="withdraw-modal" role="dialog" aria-modal="true" aria-labelledby="withdraw-title">
+          <h2 id="withdraw-title">회원탈퇴 하시겠습니까?</h2>
+          <div className="modal-actions">
+            <button type="button" className="modal-cancel-button" onClick={() => setIsWithdrawModalOpen(false)}>취소</button>
+            <button type="button" className="modal-confirm-button" onClick={handleWithdrawConfirm}>확인</button>
+          </div>
+        </section>
+      </div>
     </>
   );
 }
