@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { apiRequest } from '../services/apiClient';
-import CommentList from './CommentList';
+import CommentList from '../components/CommentList';
 import AppHeader from '../components/AppHeader';
 import { usePageStyles } from '../hooks/usePageStyles';
 import pageStyles from '../../../pages/post-detail/post-detail.css?inline';
