@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { AuthContext } from './auth-context';
+import { clearAuthStorage } from '../services/authStorage';
 
 export function AuthProvider({ children }) {
   const [accessToken, setAccessToken] = useState(() => localStorage.getItem('accessToken'));
@@ -21,10 +22,7 @@ export function AuthProvider({ children }) {
       setAccessToken(tokenPayload.accessToken);
     },
     logout() {
-      localStorage.removeItem('accessToken');
-      localStorage.removeItem('refreshToken');
-      localStorage.removeItem('loginUserEmail');
-      localStorage.removeItem('loginUserNickname');
+      clearAuthStorage();
       setAccessToken(null);
     },
   }), [accessToken]);

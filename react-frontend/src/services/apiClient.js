@@ -1,3 +1,5 @@
+import { clearAuthStorage } from './authStorage';
+
 const ACCESS_TOKEN_KEY = 'accessToken';
 
 export class ApiError extends Error {
@@ -45,8 +47,7 @@ export async function apiRequest(path, options = {}) {
 
   if (!response.ok) {
     if (response.status === 401 && auth) {
-      localStorage.removeItem('accessToken');
-      localStorage.removeItem('refreshToken');
+      clearAuthStorage();
       window.dispatchEvent(new Event('auth:unauthorized'));
     }
     throw new ApiError(response, body);

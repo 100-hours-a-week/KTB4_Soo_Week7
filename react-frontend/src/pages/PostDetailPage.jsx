@@ -64,9 +64,7 @@ function PostDetailPage() {
   const [isUpdatingLike, setIsUpdatingLike] = useState(false);
   const [actionError, setActionError] = useState('');
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const [currentUserNickname, setCurrentUserNickname] = useState(
-    () => localStorage.getItem('loginUserNickname') || ''
-  );
+  const [currentUserNickname, setCurrentUserNickname] = useState('');
 
   useEffect(() => {
     const controller = new AbortController();
@@ -84,7 +82,9 @@ function PostDetailPage() {
           localStorage.setItem('loginUserNickname', profile.nickname);
         }
       } catch {
-        // 상세 화면은 저장된 닉네임으로 계속 표시한다.
+        if (!ignore) {
+          setCurrentUserNickname('');
+        }
       }
     }
 
